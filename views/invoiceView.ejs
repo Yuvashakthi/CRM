@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CRM - Navi Promotions</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <h2>CRM</h2>
+      <ul>
+        <li><a href="/dashboard">Dashboard</a></li>
+        
+        <!-- Customers Dropdown -->
+        <li>
+          <a href="#" class="dropdown" onclick="toggleDropdown('customerDropdown')">Customers ▾</a>
+          <ul id="customerDropdown" class="dropdown-menu">
+            <li><a href="/clients">Clients</a></li>
+            <li><a href="/customersCreate">Create Client</a></li>
+          </ul>
+        </li>
+
+        <!-- Projects Dropdown -->
+        <li>
+          <a href="#" class="dropdown" onclick="toggleDropdown('projectDropdown')">Projects ▾</a>
+          <ul id="projectDropdown" class="dropdown-menu">
+            <li><a href="/projectView">Project View</a></li>
+            <li><a href="/projectCreate">Project Create</a></li>
+          </ul>
+        </li>
+
+        <!-- Invoice Dropdown -->
+        <li>
+          <a href="#" class="dropdown" onclick="toggleDropdown('invoiceDropdown')">Invoices ▾</a>
+          <ul id="invoiceDropdown" class="dropdown-menu">
+            <li><a href="/invoiceView">Invoice View</a></li>
+            <li><a href="/invoice">Invoice Create</a></li>
+          </ul>
+        </li>
+      </ul>
+    </aside>
+
+    <main class="content" id="content">
+      <h1>Invoice View</h1>
+  
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>Invoice ID</th>
+            <th>Creation Date</th>
+            <th>Due Date</th>
+            <th>Status</th>
+            <th>Client ID</th>
+            <th>Due Amount</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% invoices.forEach(invoice => { %>
+            <tr>
+              <td><%= invoice.invoiceId %></td>
+              <td><%= new Date(invoice.creationDate).toLocaleDateString() %></td>
+              <td><%= new Date(invoice.dueDate).toLocaleDateString() %></td>
+              <td><%= invoice.status %></td>
+              <td><%= invoice.clientId %></td>
+              <td> <%= invoice.dueAmount.toFixed(2) %></td>
+              <td>
+                <% if (invoice.filePath) { %>
+                  <a href="/invoices/download/<%= invoice.invoiceId %>" class="view-btn">Download</a>
+
+                <% } else { %>
+                  <span class="no-file">N/A</span>
+                <% } %>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+      
+    </main>
+
+  
+  </div>
+    
+
+
+    
+ 
+
+  <script src="/script.js"></script>
+</body>
+</html>

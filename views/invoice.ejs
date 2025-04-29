@@ -1,0 +1,112 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CRM - Navi Promotions</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <h2>CRM</h2>
+      <ul>
+        <li><a href="/dashboard">Dashboard</a></li>
+        
+        <!-- Customers Dropdown -->
+        <li>
+          <a href="#" class="dropdown" onclick="toggleDropdown('customerDropdown')">Customers ▾</a>
+          <ul id="customerDropdown" class="dropdown-menu">
+            <li><a href="/clients">Clients</a></li>
+            <li><a href="/customersCreate">Create Client</a></li>
+          </ul>
+        </li>
+
+        <!-- Projects Dropdown -->
+        <li>
+          <a href="#" class="dropdown" onclick="toggleDropdown('projectDropdown')">Projects ▾</a>
+          <ul id="projectDropdown" class="dropdown-menu">
+            <li><a href="/projectView">Project View</a></li>
+            <li><a href="/projectCreate">Project Create</a></li>
+          </ul>
+        </li>
+
+        <!-- Invoice Dropdown -->
+        <li>
+          <a href="#" class="dropdown" onclick="toggleDropdown('invoiceDropdown')">Invoices ▾</a>
+          <ul id="invoiceDropdown" class="dropdown-menu">
+            <li><a href="/invoiceView">Invoice View</a></li>
+            <li><a href="/invoice">Invoice Create</a></li>
+          </ul>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="content" id="content">
+      <h1>Create Invoice</h1>
+      <form id="invoiceForm" action="/create" method="POST" enctype="multipart/form-data">
+        <label>Invoice ID:</label>
+        <input type="text" name="invoiceId" required><br>
+
+        <label>Creation Date:</label>
+        <input type="date" name="creationDate" required><br>
+
+        <label>Due Date:</label>
+        <input type="date" name="dueDate" required><br>
+
+        <label>Status:</label>
+        <select name="status" required>
+            <option value="Pending">Pending</option>
+            <option value="Paid">Paid</option>
+            <option value="Overdue">Overdue</option>
+        </select><br>
+
+        <label>Client ID:</label>
+        <input type="text" name="clientId" required><br>
+
+        <label>Due Amount:</label>
+        <input type="number" name="dueAmount" required><br>
+
+        <label>Upload File:</label>
+        <input type="file" name="invoiceFile"><br><br>
+
+        <button type="submit">Create Invoice</button>
+    </form>
+      
+    </main>
+  </div>
+
+  <script src="/script.js"></script>
+  <script>
+  document.getElementById('invoiceForm').addEventListener('submit', async function (e) {
+    e.preventDefault(); // prevent default form submission
+
+    const formData = new FormData(this);
+
+    try {
+      const res = await fetch('/invoices/create', {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert('Invoice created successfully!');
+        location.reload(); // Refreshes the page
+      } else {
+        alert(data.error || 'Failed to create invoice');
+      }
+    } catch (err) {
+      alert('Error: ' + err.message);
+    }
+  });
+  </script>
+
+
+  
+</body>
+</html> 

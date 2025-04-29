@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CRM - Navi Promotions</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar Navigation -->
+   <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <h2>CRM</h2>
+      <ul>
+        <li><a href="/dashboard">Dashboard</a></li>
+        
+        <!-- Customers Dropdown -->
+        <li>
+          <a href="#" class="dropdown" onclick="toggleDropdown('customerDropdown')">Customers ▾</a>
+          <ul id="customerDropdown" class="dropdown-menu">
+            <li><a href="/clients">Clients</a></li>
+            <li><a href="/customersCreate">Create Client</a></li>
+          </ul>
+        </li>
+
+        <!-- Projects Dropdown -->
+        <li>
+          <a href="#" class="dropdown" onclick="toggleDropdown('projectDropdown')">Projects ▾</a>
+          <ul id="projectDropdown" class="dropdown-menu">
+            <li><a href="/projectView">Project View</a></li>
+            <li><a href="/projectCreate">Project Create</a></li>
+          </ul>
+        </li>
+
+        <!-- Invoice Dropdown -->
+        <li>
+          <a href="#" class="dropdown" onclick="toggleDropdown('invoiceDropdown')">Invoices ▾</a>
+          <ul id="invoiceDropdown" class="dropdown-menu">
+            <li><a href="/invoiceView">Invoice View</a></li>
+            <li><a href="/invoice">Invoice Create</a></li>
+          </ul>
+        </li>
+         
+      </ul>
+    </aside>
+
+
+    <main class="content" id="content">
+      <h1>Create Project</h1>
+      <form action="/api/projects" method="POST">
+        <label>Project Name: <input type="text" name="projectName" required /></label>
+        <label>Project ID: <input type="text" name="projectId" required /></label>
+        <label>Client ID: <input type="text" name="clientId" required /></label>
+        <label>Project Type: <input type="text" name="projectType" /></label>
+        <label>Assigned To: <input type="text" name="assignedTo" /></label>
+        <label>Start Date: <input type="date" name="startDate" /></label>
+        <label>End Date: <input type="date" name="endDate" /></label>
+        <label>Status: <input type="text" name="status" /></label>
+        <label>Worth (in INR): <input type="number" name="worth" /></label>
+        <button type="submit">Create Project</button>
+      </form>
+      
+    </main>
+    
+  </div>
+
+  <script src="/script.js"></script>
+  <script>
+    async function submitProject(event) {
+      event.preventDefault();
+      const formData = new FormData(event.target);
+  
+      const data = Object.fromEntries(formData.entries());
+  
+      try {
+        const response = await fetch('/api/projects', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
+  
+        const result = await response.json();
+  
+        if (response.ok) {
+          alert('Project created successfully!');
+          event.target.reset(); // Reset the form fields without redirection
+        } else {
+          alert(result.error || 'Failed to create project. Please try again.');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error submitting project. Please try again.');
+      }
+    }
+  
+    // Attach event listener to form
+    document.querySelector('form').addEventListener('submit', submitProject);
+  </script>
+  
+</body>
+</html>
+ 

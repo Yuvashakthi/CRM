@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CRM - Navi Promotions</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar Navigation -->
+   <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <h2>CRM</h2>
+      <ul>
+        <li><a href="/dashboard">Dashboard</a></li>
+        
+        <!-- Customers Dropdown -->
+        <li>
+          <a href="#" class="dropdown" onclick="toggleDropdown('customerDropdown')">Customers ▾</a>
+          <ul id="customerDropdown" class="dropdown-menu">
+            <li><a href="/clients">Clients</a></li>
+            <li><a href="/customersCreate">Create Client</a></li>
+          </ul>
+        </li>
+
+        <!-- Projects Dropdown -->
+        <li>
+          <a href="#" class="dropdown" onclick="toggleDropdown('projectDropdown')">Projects ▾</a>
+          <ul id="projectDropdown" class="dropdown-menu">
+            <li><a href="/projectView">Project View</a></li>
+            <li><a href="/projectCreate">Project Create</a></li>
+          </ul>
+        </li>
+        
+        <!-- Invoice Dropdown -->
+        <li>
+          <a href="#" class="dropdown" onclick="toggleDropdown('invoiceDropdown')">Invoices ▾</a>
+          <ul id="invoiceDropdown" class="dropdown-menu">
+            <li><a href="/invoiceView">Invoice View</a></li>
+            <li><a href="/invoice">Invoice Create</a></li>
+          </ul>
+        </li>
+      </ul>
+    </aside>
+
+
+    <!-- Main Layout -->
+    <div class="main-content">
+      <!-- Profile Section (Left Side) -->
+      <div class="profile-section">
+        <img src="<%= client.avatar %>" alt="Avatar" class="profile-avatar">
+        <h1><%= client.name %></h1>
+        <p><%= client.email %></p>
+        <div class="profile-stats">
+          <div>
+            <h4>Followers</h4>
+            <p>28.65K</p>
+          </div>
+          <div>
+            <h4>Following</h4>
+            <p>38.85K</p>
+          </div>
+          <div>
+            <h4>Engagement</h4>
+            <p>43.67K</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Section (Right Side) -->
+      <div class="content-section">
+        <div class="nav-tabs">
+          <button class="tab-link active" onclick="showSection(event, 'personal')">Personal</button>
+          <button class="tab-link" onclick="showSection(event, 'business-info')">Business Info</button>
+          <button class="tab-link" onclick="showSection(event, 'project-info')">Project Info</button>
+          <button class="tab-link" onclick="showSection(event, 'invoice')">Invoice</button>
+          <button class="tab-link" onclick="showSection(event, 'billing')">Billing</button>
+        </div>
+
+        <!-- Personal Section -->
+        <div id="personal" class="tab-content" style="display: block;">
+          <h2>Personal Details</h2>
+          <p><strong>Full Name:</strong> <%= client.name %></p>
+          <p><strong>Date of Birth:</strong> <%= client.dob ? client.dob.toDateString() : 'N/A' %></p>
+          <p><strong>Marital Status:</strong> <%= client.maritalStatus || 'N/A' %></p>
+          <p><strong>Marriage Date:</strong> <%= client.marriageDate ? client.marriageDate.toDateString() : 'N/A' %></p>
+          <p><strong>House Address:</strong> <%= client.houseAddress || 'N/A' %></p>
+        </div>
+
+        <!-- Business Section -->
+        <div id="business-info" class="tab-content">
+          <h2>Business Info</h2>
+          <p><strong>Company Name:</strong> <%= client.companyName %></p>
+          <p><strong>Company Start Date:</strong> <%= client.companyStartDate ? client.companyStartDate.toDateString() : 'N/A' %></p>
+          <p><strong>Company ID Number (GST):</strong> <%= client.companyIdNumber %></p>
+          <p><strong>Industry Type:</strong> <%= client.industryType %></p>
+          <p><strong>Business Type:</strong> <%= client.businessType %></p>
+        </div>
+        
+        <!-- Project info Section -->
+        <div id="project-info" class="tab-content">
+          <h2>Project Info</h2>
+          <div id="projectContainer" class="project-grid" data-loaded="false"></div>
+            <!-- Project Details Modal -->
+      
+          <div id="projectDetailsModal" style="display:none; background:#fff; border:none;border-radius:25px; padding:20px;">
+            <h2>Project Details</h2>
+            <p><strong>Name:</strong> <span id="projName">-</span></p>
+            <p><strong>ID:</strong> <span id="projId">-</span></p>
+            <p><strong>Type:</strong> <span id="projType">-</span></p>
+            <p><strong>Assigned To:</strong> <span id="projAssigned">-</span></p>                   
+            <p><strong>Start Date:</strong> <span id="projStart">-</span></p>
+            <p><strong>End Date:</strong> <span id="projEnd">-</span></p>
+            <p><strong>Status:</strong> <span id="projStatus">-</span></p>
+            <p><strong>Worth:</strong> ₹<span id="projWorth">-</span></p>
+            <button onclick="document.getElementById('projectDetailsModal').style.display='none'">Close</button>
+          </div>
+        </div>
+        
+      
+
+        <!-- Invoice Section -->
+        <div id="invoice" class="tab-content">
+          <h2>Invoices</h2>
+          <div style="text-align: right; font-weight: bold; margin-bottom: 10px;">
+            Total Amount: ₹<span id="totalDueAmount">0</span>
+          </div>
+          <div id="invoiceContainer" class="project-grid"></div>
+             
+          <!-- Invoice Modal -->
+          <div id="invoiceDetailsModal" style="display:none; background:#fff; border:none; border-radius:25px; padding:20px;">
+            <h2>Invoice Details</h2>
+            <p><strong>Invoice ID:</strong> <span id="invId">-</span></p>
+          
+            <label>Creation Date:</label>
+            <input type="date" id="invCreate" disabled><br>
+          
+            <label>Due Date:</label>
+            <input type="date" id="invDue" disabled><br>
+          
+            <label>Client ID:</label>
+            <input type="text" id="invClient" disabled><br>
+          
+            <label>Status:</label>
+            <select id="invStatus" disabled>
+              <option value="Pending">Pending</option>
+              <option value="Paid">Paid</option>
+              <option value="Overdue">Overdue</option>
+            </select><br>
+          
+            <label>Due Amount:</label>
+            ₹<input type="number" id="invAmount" disabled><br><br>
+          
+            <a id="downloadBtn" href="#" target="_blank"><button>Download</button></a>
+            <button id="editBtn" onclick="enableInvoiceEditing()">Edit</button>
+            <button id="saveBtn" onclick="saveInvoiceChanges()" style="display:none;">Save</button>
+            <button onclick="document.getElementById('invoiceDetailsModal').style.display='none'">Close</button>
+          </div>
+        </div>
+     
+        
+
+        
+        <div id="billing" class="tab-content">
+          <h2>Billing</h2>
+          <p>Billing details will be displayed here.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+      function toggleDropdown(id) {
+        var dropdown = document.getElementById(id);
+        dropdown.classList.toggle("show");
+      }
+
+      // Close dropdown when clicking outside
+      window.onclick = function(event) {
+        if (!event.target.matches('.dropdown')) {
+          let dropdowns = document.querySelectorAll('.dropdown-menu');
+          dropdowns.forEach(menu => menu.classList.remove('show'));
+        }
+      };
+
+  </script>
+
+  <!-- Script for Tab Navigation -->
+  <script>
+    function showSection(event, sectionId) {
+      const tabs = document.getElementsByClassName('tab-content');
+      const links = document.getElementsByClassName('tab-link');
+    
+      for (let tab of tabs) {
+        tab.style.display = 'none';
+      }
+    
+      for (let link of links) {
+        link.classList.remove('active');
+      }
+    
+      document.getElementById(sectionId).style.display = 'block';
+      event.currentTarget.classList.add('active');
+    }
+  </script>
+
+  <!-- Project Script -->
+
+  <script>
+    function showSection(event, sectionId) {
+      const tabs = document.getElementsByClassName('tab-content');
+      const links = document.getElementsByClassName('tab-link');
+
+      for (let tab of tabs) {
+        tab.style.display = 'none';
+      }
+
+      for (let link of links) {
+        link.classList.remove('active');
+      }
+
+      document.getElementById(sectionId).style.display = 'block';
+      event.currentTarget.classList.add('active');
+
+      // NEW: If Project Info tab clicked, fetch project data
+      if (sectionId === 'project-info') {
+        loadProjectData();
+      }
+    }
+
+    async function loadProjectData() {
+      const clientId = "<%= client.clientId %>"; 
+      const projectContainer = document.getElementById("projectContainer");
+
+      // Only load once to avoid reloading multiple times
+      if (projectContainer.dataset.loaded === "true") return;
+
+      try {
+        const response = await fetch(`/api/projects/client/${clientId}`);
+        const data = await response.json();
+
+        if (!response.ok) {
+          projectContainer.innerHTML = `<p>${data.error}</p>`;
+          return;
+        }
+
+        projectContainer.innerHTML = data.projects.map(project => `
+          <div class="project-card" onclick="fetchProjectDetails('${project.projectId}')">
+            <h3>${project.projectName}</h3>
+            <p><strong>Type:</strong> ${project.projectType}</p>
+            <p><strong>Status:</strong> ${project.status}</p>
+          </div>
+        `).join("");
+
+        projectContainer.dataset.loaded = "true"; // Mark it loaded
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+        projectContainer.innerHTML = `<p>Error loading projects.</p>`;
+      }
+    }
+
+    window.fetchProjectDetails = function(projectId) {
+  
+        fetch(`/api/projects/${projectId}`)
+          .then(res => res.json())
+          .then(data => {
+            const project = data.project;
+          
+
+
+            if (!project) return;
+
+            document.getElementById("projName").textContent = project.projectName || "N/A";
+            document.getElementById("projId").textContent = project.projectId || "N/A";
+            document.getElementById("projType").textContent = project.projectType || "N/A";
+            document.getElementById("projAssigned").textContent = project.assignedTo || "N/A";
+            document.getElementById("projStart").textContent = new Date(project.startDate).toDateString() || "N/A";
+            document.getElementById("projEnd").textContent = new Date(project.endDate).toDateString() || "N/A";
+            document.getElementById("projStatus").textContent = project.status || "N/A";
+            document.getElementById("projWorth").textContent = project.cost || "N/A";
+
+            document.getElementById("projectDetailsModal").style.display = "block";
+          })
+          .catch(err => console.error("Error:", err));
+      };
+
+
+
+    function closeModal() {
+      document.getElementById("projectDetailsModal").style.display = "none";
+    }
+  </script>
+
+  <!-- Invoice Script -->
+
+  <script>
+    let currentInvoiceId = null;
+    
+    document.addEventListener("DOMContentLoaded", async () => {
+      const clientId = "<%= client.clientId %>";
+      const invoiceContainer = document.getElementById("invoiceContainer");
+      const totalDueAmountElement = document.getElementById("totalDueAmount");
+    
+      try {
+        const res = await fetch(`/invoices/client/${clientId}`);
+        const data = await res.json();
+    
+        if (!res.ok) {
+          invoiceContainer.innerHTML = `<p>${data.error}</p>`;
+          return;
+        }
+    
+        let totalDue = 0;
+    
+        invoiceContainer.innerHTML = data.invoices.map(invoice => {
+          // 🧮 Only add if status is Pending or Overdue
+          if (invoice.status === "Pending" || invoice.status === "Overdue") {
+            totalDue += invoice.dueAmount;
+          }
+    
+          return `
+            <div class="project-card" onclick="showInvoiceDetails('${invoice.invoiceId}')">
+              <h3>${invoice.invoiceId}</h3>
+              <p><strong>Status:</strong> ${invoice.status}</p>
+              <p><strong>Amount:</strong> ₹${invoice.dueAmount}</p>
+            </div>
+          `;
+        }).join("");
+    
+        totalDueAmountElement.textContent = totalDue.toFixed(2); // 🖊️ Update total amount in page
+      } catch (err) {
+        console.error("Error loading invoices:", err);
+        invoiceContainer.innerHTML = `<p>Error loading invoices.</p>`;
+      }
+    });
+    
+    async function showInvoiceDetails(invoiceId) {
+      currentInvoiceId = invoiceId;
+    
+      try {
+        const res = await fetch(`/invoices/${invoiceId}`);
+        const invoice = await res.json();
+    
+        if (!res.ok) return alert("Failed to load invoice");
+    
+        document.getElementById("invId").textContent = invoice.invoiceId;
+        document.getElementById("invCreate").value = invoice.creationDate.split('T')[0];
+        document.getElementById("invDue").value = invoice.dueDate.split('T')[0];
+        document.getElementById("invClient").value = invoice.clientId;
+        document.getElementById("invStatus").value = invoice.status;
+        document.getElementById("invAmount").value = invoice.dueAmount;
+        document.getElementById("downloadBtn").href = `/invoices/download/${invoice.invoiceId}`;
+    
+        document.getElementById("invoiceDetailsModal").style.display = "block";
+    
+        disableInvoiceFields();
+        document.getElementById("editBtn").style.display = "inline-block";
+        document.getElementById("saveBtn").style.display = "none";
+      } catch (err) {
+        console.error("Error fetching invoice details:", err);
+      }
+    }
+    
+    function enableInvoiceEditing() {
+      document.getElementById("invCreate").disabled = false;
+      document.getElementById("invDue").disabled = false;
+      document.getElementById("invClient").disabled = false;
+      document.getElementById("invStatus").disabled = false;
+      document.getElementById("invAmount").disabled = false;
+    
+      document.getElementById("editBtn").style.display = "none";
+      document.getElementById("saveBtn").style.display = "inline-block";
+    }
+    
+    function disableInvoiceFields() {
+      document.getElementById("invCreate").disabled = true;
+      document.getElementById("invDue").disabled = true;
+      document.getElementById("invClient").disabled = true;
+      document.getElementById("invStatus").disabled = true;
+      document.getElementById("invAmount").disabled = true;
+    }
+    
+    async function saveInvoiceChanges() {
+      const updatedData = {
+        creationDate: document.getElementById("invCreate").value,
+        dueDate: document.getElementById("invDue").value,
+        clientId: document.getElementById("invClient").value,
+        status: document.getElementById("invStatus").value,
+        dueAmount: parseFloat(document.getElementById("invAmount").value)
+      };
+    
+      try {
+        const res = await fetch(`/invoices/${currentInvoiceId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updatedData)
+        });
+    
+        const data = await res.json();
+    
+        if (!res.ok) {
+          alert(data.error || 'Failed to update invoice');
+          return;
+        }
+    
+        alert('Invoice updated successfully!');
+        document.getElementById("invoiceDetailsModal").style.display = "none";
+        location.reload();
+      } catch (err) {
+        console.error("Error updating invoice:", err);
+        alert("Error updating invoice");
+      }
+    }
+    </script>
+    
+    
+  
+
+
+
+
+</body>
+</html>
