@@ -5,6 +5,7 @@ const path = require('path');
 const clientRoutes = require('./routes/clientRoutes');
 const projectRoutes = require('./routes/projectRoutes');
 const invoiceRoutes = require('./routes/invoiceRoutes');
+const billingRoutes = require('./routes/billingRoutes');
 const { renderInvoiceView } = require('./controllers/invoiceController');
 
 const indexRoutes = require('./routes/index');
@@ -30,6 +31,7 @@ mongoose.connect(process.env.MONGO_URI)
 //routes//
 app.use('/', clientRoutes);
 app.use('/', indexRoutes);
+app.use('/', billingRoutes);
 app.use('/', require('./routes/clientRoutes'));
 app.use("/api/projects", projectRoutes);
 app.use('/invoices', invoiceRoutes);
@@ -50,6 +52,9 @@ app.get('/invoice', (req, res) => {
   res.render('invoice'); // No leading slash, no .ejs
 });
 
+app.get('/billing', (req, res) => {
+  res.render('billing'); // No leading slash, no .ejs
+});
 //  Start Server
 app.listen(3000, () => {
   console.log('Server running on http://localhost:3000');

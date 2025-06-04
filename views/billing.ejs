@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CRM - Navi Promotions</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <h2>CRM</h2>
+      <ul>
+        <li><a href="/dashboard">Dashboard</a></li>
+
+        <!-- Customers Dropdown -->
+        <li>
+          <a href="#" class="dropdown" onclick="toggleDropdown('customerDropdown')">Customers ▾</a>
+          <ul id="customerDropdown" class="dropdown-menu">
+            <li><a href="/clients">Clients</a></li>
+            <li><a href="/customersCreate">Create Client</a></li>
+          </ul>
+        </li>
+
+        <!-- Projects Dropdown -->
+        <li>
+          <a href="#" class="dropdown" onclick="toggleDropdown('projectDropdown')">Projects ▾</a>
+          <ul id="projectDropdown" class="dropdown-menu">
+            <li><a href="/projectView">Project View</a></li>
+            <li><a href="/projectCreate">Project Create</a></li>
+          </ul>
+        </li>
+
+        <!-- Invoice Dropdown -->
+        <li>
+        <a href="#" class="dropdown" onclick="toggleDropdown('invoiceDropdown')">Invoices ▾</a>
+        <ul id="invoiceDropdown" class="dropdown-menu">
+            <li><a href="/invoiceView">Invoice View</a></li>
+            <li><a href="/invoice">Invoice Create</a></li>
+        </ul>
+        </li>
+
+        <!-- Billing Dropdown -->
+        <li>
+          <a href="#" class="dropdown" onclick="toggleDropdown('billingDropdown')">Billings ▾</a>
+          <ul id="billingDropdown" class="dropdown-menu">
+            <li><a href="/billingView">View Billings</a></li>
+            <li><a href="/billing">Create Billing</a></li>
+          </ul>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="content" id="content">
+      <h1>Create Billing</h1>
+      <form id="billingForm" action="/create" method="POST" enctype="multipart/form-data">
+        <label>Billing ID:</label>
+        <input type="text" name="billingId" required><br>
+
+        <label>Client ID:</label>
+        <input type="text" name="clientId" required><br>
+
+        <label>Paid Date:</label>
+        <input type="date" name="paidDate" required><br>
+
+        <label>Paid Amount:</label>
+        <input type="number" name="paidAmount" required><br>
+
+        <label>Status:</label>
+        <select name="status" required>
+          <option value="Paid">Paid</option>
+          <option value="Unpaid">Unpaid</option>
+          <option value="Partial">Partial</option>
+        </select><br>
+
+        <label>Upload File:</label>
+        <input type="file" name="billingFile"><br><br>
+
+        <button type="submit">Create Billing</button>
+      </form>
+    </main>
+  </div>
+
+  <script src="/script.js"></script>
+  <script>
+    document.getElementById('billingForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const formData = new FormData(this);
+
+      try {
+        const res = await fetch('/billing/create', {
+          method: 'POST',
+          body: formData
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          alert('Billing record created successfully!');
+          location.reload();
+        } else {
+          alert(data.error || 'Failed to create billing record');
+        }
+      } catch (err) {
+        alert('Error: ' + err.message);
+      }
+    });
+  </script>
+</body>
+</html>
