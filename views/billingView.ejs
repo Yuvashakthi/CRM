@@ -57,8 +57,39 @@
 
     <!-- Dynamic Content -->
     <main class="content" id="content">
-     <h1>Welcome to the Dashboard</h1>
-    </main>
+        <h1>Billing View</h1>
+  
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>Billing ID</th>
+              <th>Client ID</th>
+              <th>Paid Date</th>
+              <th>Paid Amount</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% billings.forEach(billing => { %>
+              <tr>
+                <td><%= billing.billingId %></td>
+                <td><%= billing.clientId %></td>
+                <td><%= new Date(billing.paidDate).toLocaleDateString() %></td>
+                <td>₹ <%= billing.paidAmount.toFixed(2) %></td>
+                <td><%= billing.status %></td>
+                <td>
+                  <% if (billing.fileUrl) { %>
+                    <a href="/billing/download/<%= billing.billingId %>" class="view-btn">Download</a>
+                  <% } else { %>
+                    <span class="no-file">N/A</span>
+                  <% } %>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </main>
   </div>
 
   <script src="/script.js"></script>

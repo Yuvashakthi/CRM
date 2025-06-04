@@ -23,4 +23,9 @@ router.get('/billing', (req, res) => {
 // POST route to handle form submission
 router.post('/billing/create', upload.single('billingFile'), billingController.createBilling);
 
+router.get('/billingView', billingController.viewBillings);
+router.get('/billing/download/:billingId', billingController.downloadBillingFile);
+
+
+
 module.exports = router;
