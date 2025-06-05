@@ -65,7 +65,6 @@ exports.viewBillings = async (req, res) => {
     }
   };
   
-
   exports.downloadBillingFile = async (req, res) => {
     try {
       const billing = await Billing.findOne({ billingId: req.params.billingId });
@@ -87,3 +86,52 @@ exports.viewBillings = async (req, res) => {
       res.status(500).send('Server Error');
     }
   };
+
+  // Get all billings by client ID
+exports.getBillingsByClientId = async (req, res) => {
+  try {
+    const { clientId } = req.params;
+    const billings = await Billing.find({ clientId }).sort({ paidDate: -1 });
+
+    res.json({ billings });
+  } catch (error) {
+    console.error('Error fetching billings:', error);
+    res.status(500).json({ error: 'Server error while fetching billings' });
+  }
+};
+
+
+exports.getBillingById = async (req, res) => {
+  try {
+    const billing = await Billing.findOne({ billingId: req.params.billingId });
+
+    if (!billing) {
+      return res.status(404).json({ error: 'Billing not found' });
+    }
+
+    res.json(billing);
+  } catch (error) {
+    console.error('Error fetching billing:', error);
+    res.status(500).json({ error: 'Server error while fetching billing' });
+  }
+};
+
+
+exports.updateBilling = async (req, res) => {
+  try {
+    const billingId = req.params.billingId;
+    const updates = req.body;
+
+    const billing = await Billing.findOneAndUpdate({ billingId }, updates, { new: true });
+
+    if (!billing) {
+      return res.status(404).json({ error: "Billing record not found" });
+    }
+
+    res.json({ message: "Billing updated successfully", billing });
+  } catch (error) {
+    console.error("Error updating billing:", error);
+    res.status(500).json({ error: "Server error while updating billing" });
+  }
+};
+

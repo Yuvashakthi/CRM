@@ -91,7 +91,7 @@
               <td><%= client.email %></td>
               <td>
                 <button onclick="window.location.href='/clients/<%= client._id %>'">View</button>
-                <button>Delete</button>
+                <button onclick="deleteClient('<%= client._id %>', this)">Delete</button>
               </td>
             </tr>
           <% }); %>
@@ -103,5 +103,35 @@
   </div>
 
   <script src="/script.js"></script>
+
+  <script>
+    async function deleteClient(clientId, button) {
+      if (!confirm('Are you sure you want to delete this client?')) return;
+  
+      try {
+        const res = await fetch(`/clients/${clientId}`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' }
+        });
+  
+        const data = await res.json();
+  
+        if (!res.ok) {
+          alert(data.error || 'Failed to delete client');
+          return;
+        }
+  
+        // Remove the table row from the DOM
+        const row = button.closest('tr');
+        row.remove();
+  
+        alert('Client deleted successfully!');
+      } catch (err) {
+        console.error('Error deleting client:', err);
+        alert('Server error during deletion');
+      }
+    }
+  </script>
+  
 </body>
 </html>

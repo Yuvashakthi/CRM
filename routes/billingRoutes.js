@@ -24,8 +24,16 @@ router.get('/billing', (req, res) => {
 router.post('/billing/create', upload.single('billingFile'), billingController.createBilling);
 
 router.get('/billingView', billingController.viewBillings);
+// Get billings by clientId
+router.get('/billings/client/:clientId', billingController.getBillingsByClientId);
+
+// Get single billing by billingId
+router.get('/billings/:billingId', billingController.getBillingById);
+
+// Download billing file
 router.get('/billing/download/:billingId', billingController.downloadBillingFile);
 
+router.put('/billings/:billingId', billingController.updateBilling);
 
 
 module.exports = router;

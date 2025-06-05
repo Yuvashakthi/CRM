@@ -61,24 +61,22 @@
     <div class="main-content">
       <!-- Profile Section (Left Side) -->
       <div class="profile-section">
-        <img src="<%= client.avatar %>" alt="Avatar" class="profile-avatar">
+        <% if (client.avatar) { %>
+          <img src="<%= client.avatar %>" alt="Avatar" class="profile-avatar">
+        <% } else { %>
+          <img src="/default-avatar.png" alt="Avatar" class="profile-avatar">
+        <% } %>
+        
         <h1><%= client.name %></h1>
-        <p><%= client.email %></p>
-        <div class="profile-stats">
-          <div>
-            <h4>Followers</h4>
-            <p>28.65K</p>
-          </div>
-          <div>
-            <h4>Following</h4>
-            <p>38.85K</p>
-          </div>
-          <div>
-            <h4>Engagement</h4>
-            <p>43.67K</p>
-          </div>
-        </div>
+        <br>
+        <p style="text-align: center;"><strong>Client ID:</strong> <%= client.clientId %></p>
+        <p style="text-align: center;"><strong>Email:</strong> <%= client.email %></p>
+        <p style="text-align: center;"><strong>Phone:</strong> <%= client.phone %></p>
+        <p style="text-align:center;"><strong>Location:</strong> <%= client.city %>, <%= client.state %></p>
+      
+        
       </div>
+      
 
       <!-- Tab Section (Right Side) -->
       <div class="content-section">
@@ -174,10 +172,43 @@
         
 
         
+        <!-- Billing Section -->
         <div id="billing" class="tab-content">
-          <h2>Billing</h2>
-          <p>Billing details will be displayed here.</p>
+          <h2>Billings</h2>
+          <div style="text-align: right; font-weight: bold; margin-bottom: 10px;">
+            Total Amount: ₹<span id="totalPaidAmount">0</span>
+          </div>
+          <div id="billingContainer" class="project-grid"></div>
+
+         <!-- Billing Modal -->
+        <div id="billingDetailsModal" style="display:none; background:#fff; border:none; border-radius:25px; padding:20px;">
+          <h2>Billing Details</h2>
+          <p><strong>Billing ID:</strong> <span id="billId">-</span></p>
+
+          <label>Paid Date:</label>
+          <input type="date" id="billDate" disabled><br>
+
+          <label>Client ID:</label>
+          <input type="text" id="billClient" disabled><br>
+
+          <label>Status:</label>
+          <select id="billStatus" disabled>
+            <option value="Paid">Paid</option>
+            <option value="Unpaid">Unpaid</option>
+            
+          </select><br>
+
+          <label>Paid Amount:</label>
+          ₹<input type="number" id="billAmount" disabled><br><br>
+
+          <a id="billingDownloadBtn" href="#" target="_blank"><button>Download</button></a>
+          <button id="billingEditBtn" onclick="enableBillingEditing()">Edit</button>
+          <button id="billingSaveBtn" onclick="saveBillingChanges()" style="display:none;">Save</button>
+          <button onclick="document.getElementById('billingDetailsModal').style.display='none'">Close</button>
         </div>
+
+        </div>
+
       </div>
     </div>
   </div>
@@ -326,7 +357,7 @@
         let totalDue = 0;
     
         invoiceContainer.innerHTML = data.invoices.map(invoice => {
-          // 🧮 Only add if status is Pending or Overdue
+          
           if (invoice.status === "Pending" || invoice.status === "Overdue") {
             totalDue += invoice.dueAmount;
           }
@@ -426,8 +457,127 @@
     }
     </script>
     
+    <!-- Billing Script -->
+
+    <script>
+      let currentBillingId = null;
     
-  
+        document.addEventListener("DOMContentLoaded", async () => {
+          const clientId = "<%= client.clientId %>";
+          const billingContainer = document.getElementById("billingContainer");
+          const totalPaidElement = document.getElementById("totalPaidAmount");
+
+          try {
+            const res = await fetch(`/billings/client/${clientId}`);
+            const data = await res.json();
+
+            if (!res.ok) {
+              billingContainer.innerHTML = `<p>${data.error}</p>`;
+              return;
+            }
+
+            let totalUnpaid = 0;
+            let totalPaid = 0;
+
+            billingContainer.innerHTML = data.billings.map(billing => {
+              if (billing.status === "Unpaid") {
+                totalUnpaid += billing.paidAmount;
+              } else if (billing.status === "Paid") {
+                totalPaid += billing.paidAmount;
+              }
+
+              return `
+                <div class="project-card" onclick="showBillingDetails('${billing.billingId}')">
+                  <h3>${billing.billingId}</h3>
+                  <p><strong>Status:</strong> ${billing.status}</p>
+                  <p><strong>Amount:</strong> ₹${billing.paidAmount}</p>
+                </div>
+              `;
+            }).join("");
+
+            // Show only total unpaid (outstanding) for the client
+            const outstandingAmount = totalUnpaid;
+            totalPaidElement.textContent = outstandingAmount.toFixed(2);
+          } catch (err) {
+            console.error("Error loading billings:", err);
+            billingContainer.innerHTML = `<p>Error loading billings.</p>`;
+          }
+        });
+      async function showBillingDetails(billingId) {
+        currentBillingId = billingId;
+    
+        try {
+          const res = await fetch(`/billings/${billingId}`);
+          const billing = await res.json();
+    
+          if (!res.ok) return alert("Failed to load billing");
+    
+          document.getElementById("billId").textContent = billing.billingId;
+          document.getElementById("billDate").value = billing.paidDate.split('T')[0];
+          document.getElementById("billClient").value = billing.clientId;
+          document.getElementById("billStatus").value = billing.status;
+          document.getElementById("billAmount").value = billing.paidAmount;
+          document.getElementById("billingDownloadBtn").href = `/billing/download/${billing.billingId}`;
+    
+          document.getElementById("billingDetailsModal").style.display = "block";
+    
+          disableBillingFields();
+          document.getElementById("billingEditBtn").style.display = "inline-block";
+          document.getElementById("billingSaveBtn").style.display = "none";
+        } catch (err) {
+          console.error("Error fetching billing details:", err);
+        }
+      }
+    
+      function enableBillingEditing() {
+        document.getElementById("billDate").disabled = false;
+        document.getElementById("billClient").disabled = false;
+        document.getElementById("billStatus").disabled = false;
+        document.getElementById("billAmount").disabled = false;
+    
+        document.getElementById("billingEditBtn").style.display = "none";
+        document.getElementById("billingSaveBtn").style.display = "inline-block";
+      }
+    
+      function disableBillingFields() {
+        document.getElementById("billDate").disabled = true;
+        document.getElementById("billClient").disabled = true;
+        document.getElementById("billStatus").disabled = true;
+        document.getElementById("billAmount").disabled = true;
+      }
+    
+      async function saveBillingChanges() {
+        const updatedBilling = {
+          paidDate: document.getElementById("billDate").value,
+          clientId: document.getElementById("billClient").value,
+          status: document.getElementById("billStatus").value,
+          paidAmount: parseFloat(document.getElementById("billAmount").value)
+        };
+    
+        try {
+          const res = await fetch(`/billings/${currentBillingId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updatedBilling)
+          });
+    
+          const data = await res.json();
+    
+          if (!res.ok) {
+            alert(data.error || "Failed to update billing");
+            return;
+          }
+    
+          alert("Billing updated successfully!");
+          document.getElementById("billingDetailsModal").style.display = "none";
+          location.reload();
+        } catch (err) {
+          console.error("Error updating billing:", err);
+          alert("Error updating billing");
+        }
+      }
+    </script>
+    
 
 
 

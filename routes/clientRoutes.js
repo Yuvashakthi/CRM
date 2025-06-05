@@ -24,6 +24,7 @@ router.post('/api/clients', upload.single('avatar'), clientController.createClie
 router.get('/clients', clientController.getClients);
 router.get('/clients/:clientId', clientController.getClientById);
 
+router.delete('/clients/:id', clientController.deleteClient);
 
 
 module.exports = router;

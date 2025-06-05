@@ -74,7 +74,18 @@ exports.getClientById = async (req, res) => {
   }
 };
 
-
+exports.deleteClient = async (req, res) => {
+  try {
+    const client = await Client.findByIdAndDelete(req.params.id);
+    if (!client) {
+      return res.status(404).json({ error: 'Client not found' });
+    }
+    res.status(200).json({ message: 'Client deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting client:', error);
+    res.status(500).json({ error: 'Server error while deleting client' });
+  }
+};
 
 
 
