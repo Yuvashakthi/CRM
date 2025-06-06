@@ -57,34 +57,37 @@
     <!-- Main Content -->
     <main class="content" id="content">
       <h1>Create Invoice</h1>
-      <form id="invoiceForm" action="/create" method="POST" enctype="multipart/form-data">
-        <label>Invoice ID:</label>
-        <input type="text" name="invoiceId" required><br>
-
-        <label>Creation Date:</label>
-        <input type="date" name="creationDate" required><br>
-
-        <label>Due Date:</label>
-        <input type="date" name="dueDate" required><br>
-
-        <label>Status:</label>
-        <select name="status" required>
-            <option value="Pending">Pending</option>
-            <option value="Paid">Paid</option>
-            <option value="Overdue">Overdue</option>
-        </select><br>
-
-        <label>Client ID:</label>
-        <input type="text" name="clientId" required><br>
-
-        <label>Due Amount:</label>
-        <input type="number" name="dueAmount" required><br>
-
-        <label>Upload File:</label>
-        <input type="file" name="invoiceFile"><br><br>
-
-        <button type="submit">Create Invoice</button>
-    </form>
+      <div class="form-wrapper">
+        <form id="invoiceForm" action="/create" method="POST" enctype="multipart/form-data" class="invoice-form">
+            <label>Invoice ID:</label>
+            <input type="text" name="invoiceId" required><br>
+    
+            <label>Creation Date:</label>
+            <input type="date" name="creationDate" required><br>
+    
+            <label>Due Date:</label>
+            <input type="date" name="dueDate" required><br>
+    
+            <label>Status:</label>
+            <select type="dropdown" name="status" required>
+                <option value="Pending">Pending</option>
+                <option value="Paid">Paid</option>
+                <option value="Overdue">Overdue</option>
+            </select><br>
+    
+            <label>Client ID:</label>
+            <input type="text" name="clientId" required><br>
+    
+            <label>Due Amount:</label>
+            <input type="number" name="dueAmount" required><br>
+    
+            <label>Upload File:</label>
+            <input type="file" name="invoiceFile"><br><br>
+    
+            <button type="submit">Create Invoice</button>
+        </form>
+      </div>
+    
       
     </main>
   </div>

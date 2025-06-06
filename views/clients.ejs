@@ -71,7 +71,7 @@
             <th>Phone</th>
             <th>Email</th>
             <th>Status</th>
-            <th>Actions</th>
+            
           </tr>
         </thead>
         <tbody>
@@ -85,7 +85,7 @@
                 <% } %>
               </td>
               <td><%= client.clientId %></td>
-              <td><a href="/clients/<%= client._id %>"><%= client.name %></a></td>
+              <td><a  style="color:#00488E;font-weight:bold;"href="/clients/<%= client._id %>"><%= client.name %></a></td>
               <td><%= client.companyName %></td>
               <td><%= client.phone %></td>
               <td><%= client.email %></td>

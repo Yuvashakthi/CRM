@@ -58,19 +58,22 @@
 
 
     <main class="content" id="content">
-      <h1>Create Project</h1>
-      <form action="/api/projects" method="POST">
-        <label>Project Name: <input type="text" name="projectName" required /></label>
-        <label>Project ID: <input type="text" name="projectId" required /></label>
-        <label>Client ID: <input type="text" name="clientId" required /></label>
-        <label>Project Type: <input type="text" name="projectType" /></label>
-        <label>Assigned To: <input type="text" name="assignedTo" /></label>
-        <label>Start Date: <input type="date" name="startDate" /></label>
-        <label>End Date: <input type="date" name="endDate" /></label>
-        <label>Status: <input type="text" name="status" /></label>
-        <label>Worth (in INR): <input type="number" name="worth" /></label>
-        <button type="submit">Create Project</button>
-      </form>
+      <h1 class="form-wrapper" style="color:#00488E;">Create Project</h1>
+      <div class="form-wrapper">
+        <form action="/api/projects" method="POST" class="project-form">
+          <label>Project Name: <input type="text" name="projectName" required /></label>
+          <label>Project ID: <input type="text" name="projectId" required /></label>
+          <label>Client ID: <input type="text" name="clientId" required /></label>
+          <label>Project Type: <input type="text" name="projectType" /></label>
+          <label>Assigned To: <input type="text" name="assignedTo" /></label>
+          <label>Start Date: <input type="date" name="startDate" /></label>
+          <label>End Date: <input type="date" name="endDate" /></label>
+          <label>Status: <input type="text" name="status" /></label>
+          <label>Worth (in INR): <input type="text" name="worth" /></label>
+          <button type="submit">Create Project</button>
+        </form>
+      </div>
+     
       
     </main>
     

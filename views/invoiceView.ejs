@@ -78,7 +78,7 @@
               <td> <%= invoice.dueAmount.toFixed(2) %></td>
               <td>
                 <% if (invoice.filePath) { %>
-                  <a href="/invoices/download/<%= invoice.invoiceId %>" class="view-btn">Download</a>
+                  <a  href="/invoices/download/<%= invoice.invoiceId %>" class="view-btn">Download</a>
 
                 <% } else { %>
                   <span class="no-file">N/A</span>

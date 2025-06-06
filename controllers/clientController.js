@@ -87,6 +87,3 @@ exports.deleteClient = async (req, res) => {
   }
 };
 
-
-
-

@@ -57,35 +57,38 @@
     <!-- Dynamic Content -->
     <main class="content" id="content">
         
-        <h1>Create New Client</h1>
-        <form action="/api/clients" method="POST" enctype="multipart/form-data">
-          <label>Name <input type="text" name="name" required /></label>
-          <label>Client ID <input type="text" name="clientId" required /></label>
-          <label>Company Name <input type="text" name="companyName" required /></label>
-          <label>Phone Number <input type="tel" name="phone" required /></label>
-          <label>Email <input type="email" name="email" required /></label>
-          <label>Address <input type="text" name="address" required /></label>
-          <label>Role <input type="text" name="role" /></label>
-          <label>Date of Birth <input type="date" name="dob" /></label>
-          <label>Country <input type="text" name="country" required /></label>
-          <label>State <input type="text" name="state" required /></label>
-          <label>City <input type="text" name="city" required /></label>
-          <label>Currency <input type="text" name="currency" /></label>
+        <h1 style="color:#00488E;">Create New Client</h1>
         
-          <!-- Additional Fields -->
-          <label>Marital Status <input type="text" name="maritalStatus" /></label>
-          <label>Marriage Date <input type="date" name="marriageDate" /></label>
-          <label>House Address <input type="text" name="houseAddress" /></label>
-          <label>Company Start Date <input type="date" name="companyStartDate" required /></label>
-          <label>Company ID Number (GST) <input type="text" name="companyIdNumber" required /></label>
-          <label>Industry Type <input type="text" name="industryType" /></label>
-          <label>Business Type <input type="text" name="businessType" /></label>
-        
-          <label>Avatar <input type="file" name="avatar" accept="image/*" /></label>
-        
-          <button type="submit">Create Client</button>
-        </form>
-        
+          <form action="/api/clients" method="POST" enctype="multipart/form-data" >
+            <label>Name <input type="text" name="name" required /></label>
+            <label>Client ID <input type="text" name="clientId" required /></label>
+            <label>Company Name <input type="text" name="companyName" required /></label>
+            <label>Phone Number <input type="tel" name="phone" required /></label>
+            <label>Email <input type="email" name="email" required /></label>
+            <label>Address <input type="text" name="address" required /></label>
+            <label>Role <input type="text" name="role" /></label>
+            <label>Date of Birth <input type="date" name="dob" /></label>
+            <label>Country <input type="text" name="country" required /></label>
+            <label>State <input type="text" name="state" required /></label>
+            <label>City <input type="text" name="city" required /></label>
+            <label>Currency <input type="text" name="currency" /></label>
+          
+            <!-- Additional Fields -->
+            <label>Marital Status <input type="text" name="maritalStatus" /></label>
+            <label>Marriage Date <input type="date" name="marriageDate" /></label>
+            <label>House Address <input type="text" name="houseAddress" /></label>
+            <label>Company Start Date <input type="date" name="companyStartDate" required /></label>
+            <label>Company ID Number (GST) <input type="text" name="companyIdNumber" required /></label>
+            <label>Industry Type <input type="text" name="industryType" /></label>
+            <label>Business Type <input type="text" name="businessType" /></label>
+          
+            <label>Avatar <input type="file" name="avatar" accept="image/*" /></label>
+          
+            <button type="submit">Create Client</button>
+          </form>
+          
+      
+       
         
         
     </main>

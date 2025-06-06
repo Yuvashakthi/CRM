@@ -55,31 +55,34 @@
     <!-- Main Content -->
     <main class="content" id="content">
       <h1>Create Billing</h1>
-      <form id="billingForm" action="/create" method="POST" enctype="multipart/form-data">
-        <label>Billing ID:</label>
-        <input type="text" name="billingId" required><br>
-
-        <label>Client ID:</label>
-        <input type="text" name="clientId" required><br>
-
-        <label>Paid Date:</label>
-        <input type="date" name="paidDate" required><br>
-
-        <label>Paid Amount:</label>
-        <input type="number" name="paidAmount" required><br>
-
-        <label>Status:</label>
-        <select name="status" required>
-          <option value="Paid">Paid</option>
-          <option value="Unpaid">Unpaid</option>
-          
-        </select><br>
-
-        <label>Upload File:</label>
-        <input type="file" name="billingFile"><br><br>
-
-        <button type="submit">Create Billing</button>
-      </form>
+      <div class="form-wrapper">
+        <form id="billingForm" action="/create" method="POST" enctype="multipart/form-data" class="invoice-form">
+          <label>Billing ID:</label>
+          <input type="text" name="billingId" required><br>
+  
+          <label>Client ID:</label>
+          <input type="text" name="clientId" required><br>
+  
+          <label>Paid Date:</label>
+          <input type="date" name="paidDate" required><br>
+  
+          <label>Paid Amount:</label>
+          <input type="number" name="paidAmount" required><br>
+  
+          <label>Status:</label>
+          <select name="status" required>
+            <option value="Paid">Paid</option>
+            <option value="Unpaid">Unpaid</option>
+            
+          </select><br>
+  
+          <label>Upload File:</label>
+          <input type="file" name="billingFile"><br><br>
+  
+          <button type="submit">Create Billing</button>
+        </form>
+      </div>
+     
     </main>
   </div>
 
