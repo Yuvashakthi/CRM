@@ -67,7 +67,7 @@
           <img src="/default-avatar.png" alt="Avatar" class="profile-avatar">
         <% } %>
         
-        <h1><%= client.name %></h1>
+        <h1 style="color:#00488E;"><%= client.name %></h1>
         <br>
         <p style="text-align: center;"><strong>Client ID:</strong> <%= client.clientId %></p>
         <p style="text-align: center;"><strong>Email:</strong> <%= client.email %></p>
@@ -90,7 +90,7 @@
 
         <!-- Personal Section -->
         <div id="personal" class="tab-content" style="display: block;">
-          <h2>Personal Details</h2>
+          <h2  style="color:#00488E;">Personal Details</h2>
           <p><strong>Full Name:</strong> <%= client.name %></p>
           <p><strong>Date of Birth:</strong> <%= client.dob ? client.dob.toDateString() : 'N/A' %></p>
           <p><strong>Marital Status:</strong> <%= client.maritalStatus || 'N/A' %></p>
@@ -100,7 +100,7 @@
 
         <!-- Business Section -->
         <div id="business-info" class="tab-content">
-          <h2>Business Info</h2>
+          <h2  style="color:#00488E;">Business Info</h2>
           <p><strong>Company Name:</strong> <%= client.companyName %></p>
           <p><strong>Company Start Date:</strong> <%= client.companyStartDate ? client.companyStartDate.toDateString() : 'N/A' %></p>
           <p><strong>Company ID Number (GST):</strong> <%= client.companyIdNumber %></p>
@@ -110,12 +110,12 @@
         
         <!-- Project info Section -->
         <div id="project-info" class="tab-content">
-          <h2>Project Info</h2>
+          <h2  style="color:#00488E;">Project Info</h2>
           <div id="projectContainer" class="project-grid" data-loaded="false"></div>
             <!-- Project Details Modal -->
       
           <div id="projectDetailsModal" style="display:none; background:#fff; border:none;border-radius:25px; padding:20px;">
-            <h2>Project Details</h2>
+            <h2  style="color:#00488E;">Project Details</h2>
             <p><strong>Name:</strong> <span id="projName">-</span></p>
             <p><strong>ID:</strong> <span id="projId">-</span></p>
             <p><strong>Type:</strong> <span id="projType">-</span></p>
@@ -132,41 +132,57 @@
 
         <!-- Invoice Section -->
         <div id="invoice" class="tab-content">
-          <h2>Invoices</h2>
-          <div style="text-align: right; font-weight: bold; margin-bottom: 10px;">
-            Total Amount: ₹<span id="totalDueAmount">0</span>
+          <h2 style="color:#00488E;">Invoices</h2>
+          <div style="text-align: right;">
+            <div class="invoicemodel">
+              Total Amount: ₹<span id="totalDueAmount">0</span>
+            </div>
           </div>
+         
           <div id="invoiceContainer" class="project-grid"></div>
              
           <!-- Invoice Modal -->
-          <div id="invoiceDetailsModal" style="display:none; background:#fff; border:none; border-radius:25px; padding:20px;">
-            <h2>Invoice Details</h2>
+          <div id="invoiceDetailsModal" class="invoice-modal" style="display:none;">
+            <h2 style="color:#00488E;">Invoice Details</h2>
             <p><strong>Invoice ID:</strong> <span id="invId">-</span></p>
-          
-            <label>Creation Date:</label>
-            <input type="date" id="invCreate" disabled><br>
-          
-            <label>Due Date:</label>
-            <input type="date" id="invDue" disabled><br>
-          
-            <label>Client ID:</label>
-            <input type="text" id="invClient" disabled><br>
-          
-            <label>Status:</label>
-            <select id="invStatus" disabled>
-              <option value="Pending">Pending</option>
-              <option value="Paid">Paid</option>
-              <option value="Overdue">Overdue</option>
-            </select><br>
-          
-            <label>Due Amount:</label>
-            ₹<input type="number" id="invAmount" disabled><br><br>
-          
-            <a id="downloadBtn" href="#" target="_blank"><button>Download</button></a>
-            <button id="editBtn" onclick="enableInvoiceEditing()">Edit</button>
-            <button id="saveBtn" onclick="saveInvoiceChanges()" style="display:none;">Save</button>
-            <button onclick="document.getElementById('invoiceDetailsModal').style.display='none'">Close</button>
+
+            <div class="invoice-grid">
+              <div class="invoice-field">
+                <label>Creation Date:</label>
+                <input type="date" id="invCreate" disabled>
+              </div>
+              <div class="invoice-field">
+                <label>Due Date:</label>
+                <input type="date" id="invDue" disabled>
+              </div>
+
+              <div class="invoice-field">
+                <label>Client ID:</label>
+                <input type="text" id="invClient" disabled>
+              </div>
+              <div class="invoice-field">
+                <label>Status:</label>
+                <select id="invStatus" disabled>
+                  <option value="Pending">Pending</option>
+                  <option value="Paid">Paid</option>
+                  <option value="Overdue">Overdue</option>
+                </select>
+              </div>
+
+              <div class="invoice-field full-width">
+                <label>Due Amount:</label>
+                <input type="number" id="invAmount" disabled>
+              </div>
+            </div>
+
+            <div style="margin-top: 15px; text-align: center;">
+              <a id="downloadBtn" href="#" target="_blank"><button>Download</button></a>
+              <button id="editBtn" onclick="enableInvoiceEditing()">Edit</button>
+              <button id="saveBtn" onclick="saveInvoiceChanges()" style="display:none;">Save</button>
+              <button onclick="document.getElementById('invoiceDetailsModal').style.display='none'">Close</button>
+            </div>
           </div>
+
         </div>
      
         
@@ -174,38 +190,52 @@
         
         <!-- Billing Section -->
         <div id="billing" class="tab-content">
-          <h2>Billings</h2>
-          <div style="text-align: right; font-weight: bold; margin-bottom: 10px;">
-            Total Amount: ₹<span id="totalPaidAmount">0</span>
+          <h2 style="color:#00488E;">Billings</h2>
+          <div style="text-align: right;">
+            <div class="invoicemodel">
+              Total Amount: ₹<span id="totalPaidAmount">0</span>
+            </div>
           </div>
+         
           <div id="billingContainer" class="project-grid"></div>
+          <!-- Billing Modal -->
+          <div id="billingDetailsModal" class="billing-modal" style="display:none;">
+            <h2 style="color:#00488E;">Billing Details</h2>
+            <p><strong>Billing ID:</strong> <span id="billId">-</span></p>
 
-         <!-- Billing Modal -->
-        <div id="billingDetailsModal" style="display:none; background:#fff; border:none; border-radius:25px; padding:20px;">
-          <h2>Billing Details</h2>
-          <p><strong>Billing ID:</strong> <span id="billId">-</span></p>
+            <div class="billing-grid">
+              <div class="billing-field">
+                <label>Paid Date:</label>
+                <input type="date" id="billDate" disabled>
+              </div>
 
-          <label>Paid Date:</label>
-          <input type="date" id="billDate" disabled><br>
+              <div class="billing-field">
+                <label>Client ID:</label>
+                <input type="text" id="billClient" disabled>
+              </div>
 
-          <label>Client ID:</label>
-          <input type="text" id="billClient" disabled><br>
+              <div class="billing-field">
+                <label>Status:</label>
+                <select id="billStatus" disabled>
+                  <option value="Paid">Paid</option>
+                  <option value="Unpaid">Unpaid</option>
+                </select>
+              </div>
 
-          <label>Status:</label>
-          <select id="billStatus" disabled>
-            <option value="Paid">Paid</option>
-            <option value="Unpaid">Unpaid</option>
-            
-          </select><br>
+              <div class="billing-field full-width">
+                <label>Paid Amount:</label>
+                <input type="number" id="billAmount" disabled>
+              </div>
+            </div>
 
-          <label>Paid Amount:</label>
-          ₹<input type="number" id="billAmount" disabled><br><br>
+            <div style="margin-top: 15px; text-align: center;">
+              <a id="billingDownloadBtn" href="#" target="_blank"><button>Download</button></a>
+              <button id="billingEditBtn" onclick="enableBillingEditing()">Edit</button>
+              <button id="billingSaveBtn" onclick="saveBillingChanges()" style="display:none;">Save</button>
+              <button onclick="document.getElementById('billingDetailsModal').style.display='none'">Close</button>
+            </div>
+          </div>
 
-          <a id="billingDownloadBtn" href="#" target="_blank"><button>Download</button></a>
-          <button id="billingEditBtn" onclick="enableBillingEditing()">Edit</button>
-          <button id="billingSaveBtn" onclick="saveBillingChanges()" style="display:none;">Save</button>
-          <button onclick="document.getElementById('billingDetailsModal').style.display='none'">Close</button>
-        </div>
 
         </div>
 
@@ -290,7 +320,7 @@
 
         projectContainer.innerHTML = data.projects.map(project => `
           <div class="project-card" onclick="fetchProjectDetails('${project.projectId}')">
-            <h3>${project.projectName}</h3>
+            <h3 style="color:#00488E;  text-align:center;">${project.projectName}</h3>
             <p><strong>Type:</strong> ${project.projectType}</p>
             <p><strong>Status:</strong> ${project.status}</p>
           </div>
@@ -364,7 +394,7 @@
     
           return `
             <div class="project-card" onclick="showInvoiceDetails('${invoice.invoiceId}')">
-              <h3>${invoice.invoiceId}</h3>
+              <h3 style="color:#00488E;">${invoice.invoiceId}</h3>
               <p><strong>Status:</strong> ${invoice.status}</p>
               <p><strong>Amount:</strong> ₹${invoice.dueAmount}</p>
             </div>
@@ -488,7 +518,7 @@
 
               return `
                 <div class="project-card" onclick="showBillingDetails('${billing.billingId}')">
-                  <h3>${billing.billingId}</h3>
+                  <h3 style="color:#00488E;">${billing.billingId}</h3>
                   <p><strong>Status:</strong> ${billing.status}</p>
                   <p><strong>Amount:</strong> ₹${billing.paidAmount}</p>
                 </div>

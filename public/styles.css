@@ -8,6 +8,7 @@ body {
   
 }
 
+
 .container {
   display: flex;
   width: 100%;
@@ -26,6 +27,7 @@ body {
   box-shadow: 2px 0 5px rgba(0,0,0,0.1);
   transition: all 0.3s ease;
   height:auto !important;
+  border-right: 4px solid #F7A800;
 }
 
 .sidebar h2 {
@@ -143,12 +145,7 @@ img {
   object-fit: cover;
 }
 
-button {
-  margin-right: 5px;
-  padding: 5px 10px;
-  border: none;
-  cursor: pointer;
-}
+
 
 .status-active {
   color: green;
@@ -186,8 +183,8 @@ button {
 
 .profile-section {
   width: 25%;
-  height:610px;
-  margin-top:55px;
+  height:auto !important;
+  margin-top:45px;
   margin-left:30px;
   padding: 20px;
   padding-top:60px;
@@ -195,8 +192,11 @@ button {
   border-radius:20px;
   border-right: 1px solid #ccc;
   text-align: center;
-
+  margin-bottom: 30px;
+  border: 2px solid #F7A800;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
 }
+
 .main-content {
   display: flex;
   flex-grow: 1;
@@ -207,7 +207,11 @@ button {
   height: 120px;
   border-radius: 50%;
   margin-bottom: 20px;
+  object-fit: cover;
+ 
 }
+
+
 .profile-stats {
   display: flex;
   justify-content:center;
@@ -227,36 +231,58 @@ button {
   padding-top:40px;
   padding-left:30px;
   background: white;
-  height:640px;
+  height: auto !important;
   margin-top:45px;
   margin-left:30px;
   margin-right:30px;
   border-radius:20px;
   flex-grow: 1;
+  margin-bottom: 30px;
+  border: 2px solid #F7A800;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
   
 }
 
 .nav-tabs {
   display: flex;
   margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
+
+
 .tab-link {
-  background-color: #2c3e50;
+  
   color: white;
   border: none;
-  border-radius:20px;
+  border-radius:10px;
   padding: 10px 20px;
   cursor: pointer;
+  font-weight: 400;
+  transition: 0.3s;
+}
+
+
+.tab-link:hover {
+  background-color: #F7A800;
+  color: #fff;
 }
 
 .tab-link.active {
-  background-color: #1abc9c;
+  background-color:#F7A800;
+  color: #fff;
 }
 
+/* Tab Content */
 .tab-content {
+  width:auto !important;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
   display: none;
 }
+
 
 .tab-content h2 {
   margin-bottom: 20px;
@@ -273,15 +299,22 @@ button {
 }
 
 .project-card {
-  background-color: #f0f0f0;
+  background-color: #fff;
+  border: 2px solid #00488E;
   padding: 20px;
+  width: 260px;
   border-radius: 10px;
   cursor: pointer;
   transition: background-color 0.3s;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
 }
+
+
 
 .project-card:hover {
   background-color: #e0e0e0;
+  border: 2px solid #F7A800;
 }
 
 .project-details {
@@ -294,21 +327,16 @@ button {
 
 .project-grid {
   display: grid;
+  display: flex;
+  flex-wrap: wrap;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 16px;
 }
 
-.project-card {
-  background: #f9f9f9;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  transition: 0.3s;
-}
 
 .project-card:hover {
-  background: #e0e0e0;
+  transform: scale(1.02);
+  background-color: #f7faff;
 }
 
 .modal {
@@ -401,7 +429,7 @@ button {
 
 .dashboard-bg {
   position: relative;
-  background-image: url('assets/img/dashboard.jpg'); /* Update path as needed */
+  /* background-image: url('assets/img/dashboard.jpg');  */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -418,7 +446,7 @@ button {
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url('assets/img/dashboard.jpg'); /* Same image */
+  /* background-image: url('assets/img/dashboard.jpg');  */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -854,5 +882,201 @@ form button[type="submit"]:hover {
 
   .invoice-form button[type="submit"] {
     width: 100%;
+  }
+}
+
+/* customer View */
+
+
+/* Modals */
+#projectDetailsModal{
+  background-color: #fff;
+  border: 2px solid #00488E;
+  padding: 25px;
+  max-width: 350px;
+  border-radius: 15px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+  margin: auto;
+  margin-top:40px;
+  
+}
+/* Only for Invoice Modal */
+#invoiceDetailsModal.invoice-modal {
+  background-color: #fff;
+  padding: 18px;
+  max-width: 350px;
+  border-radius: 20px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+  margin: auto;
+  margin-top:20px;
+}
+
+.invoice-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.invoice-field label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  
+}
+
+.invoice-field input,
+.invoice-field select {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+.invoice-field.full-width {
+  grid-column: span 2;
+}
+
+
+/* Billing Modal Specific Grid */
+#billingDetailsModal.billing-modal {
+  background-color: #fff;
+  padding: 18px;
+  max-width: 350px;
+  border-radius: 20px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+  margin: auto;
+  margin-top:20px;
+}
+
+.billing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 15px;
+}
+
+.billing-field label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  
+}
+
+.billing-field input,
+.billing-field select {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+.billing-field.full-width {
+  grid-column: span 3;
+}
+
+.invoicemodel {
+  display: inline-block;
+  background-color: #F7A800; 
+  color: #000;
+  height:18px;
+  padding: 16px 14px;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 16px;
+  text-align: right;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+/* Buttons */
+button {
+  padding: 8px 16px;
+  border: none;
+  background-color: #00488E;
+  color: white;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-right: 10px;
+  transition: background-color 0.2s;
+}
+
+
+button:hover {
+  background-color: #F7A800;
+  color: #000;
+}
+
+input, select {
+  padding: 6px;
+  margin-top: 5px;
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+
+
+
+/* Specific styles for iPhone SE (375px width) and similar small screens */
+@media only screen and (width: 375px) {
+  /* Sidebar becomes vertical and full width */
+  .sidebar {
+    width: 100%;
+    position: relative;
+    border-bottom: 1px solid #ccc;
+    padding: 10px;
+  }
+
+  .sidebar h2 {
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  .sidebar ul {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .sidebar li {
+    width: 100%;
+    text-align: center;
+    margin: 5px 0;
+  }
+
+  /* Main content full width with padding */
+  .content {
+    width: 100%;
+    padding: 8px;
+  }
+
+  /* Make table scrollable horizontally */
+  table {
+    display: block;
+    overflow-x: auto;
+    width: 100%;
+  }
+
+  table th, table td {
+    white-space: nowrap;
+    font-size: 12px;
+    padding: 6px;
+  }
+
+  table img {
+    width: 30px;
+    height: 30px;
+  }
+
+  /* Buttons in stacked style */
+  button {
+    display: block;
+    width: 100%;
+    margin: 4px 0;
+    font-size: 12px;
   }
 }
