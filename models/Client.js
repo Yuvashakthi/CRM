@@ -20,7 +20,7 @@ const clientSchema = new mongoose.Schema({
   companyIdNumber: { type: String, required: true },
   industryType: { type: String },
   businessType: { type: String },
-  avatar: { type: String },
+  Profile: { type: String },
 }, {
   timestamps: true
 });

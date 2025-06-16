@@ -36,7 +36,7 @@ exports.createClient = async (req, res) => {
     };
 
     if (req.file) {
-      clientData.avatar = `/uploads/${req.file.filename}`;
+      clientData.Profile = `/uploads/${req.file.filename}`;
     }
 
     const client = new Client(clientData);

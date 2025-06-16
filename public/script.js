@@ -19,11 +19,11 @@ function navigate(section) {
         <label>Currency <input type="text" name="currency" required /></label>
 
         <!-- Image Upload with Preview -->
-        <label>Avatar 
-          <input type="file" name="avatar" id="avatar" accept="image/*" />
+        <label>Profile 
+          <input type="file" name="Profile" id="Profile" accept="image/*" />
         </label>
         <div id="imagePreviewContainer" style="display:none;">
-          <img id="imagePreview" src="#" alt="Avatar Preview" style="width:150px; height:150px; object-fit:cover; border-radius:8px;" />
+          <img id="imagePreview" src="#" alt="Profile Preview" style="width:150px; height:150px; object-fit:cover; border-radius:8px;" />
           
           
         </div>
@@ -34,7 +34,7 @@ function navigate(section) {
 
       `;
 
-      document.getElementById('avatar')?.addEventListener('change', function (event) {
+      document.getElementById('Profile')?.addEventListener('change', function (event) {
         const file = event.target.files[0];
         
         if (!file) {
@@ -118,7 +118,7 @@ function navigate(section) {
         <table>
           <thead>
             <tr>
-              <th>Avatar</th>
+              <th>Profile</th>
               <th>Client ID</th>
               <th>Name</th>
               <th>Business</th>
@@ -132,7 +132,7 @@ function navigate(section) {
             ${clients.map(client => `
               <tr>
                 <td>
-                  ${client.avatar ? `<img src="${client.avatar}" alt="avatar" width="40" height="40" style="border-radius: 50%;">` : 'N/A'}
+                  ${client.Profile ? `<img src="${client.Profile}" alt="Profile" width="40" height="40" style="border-radius: 50%;">` : 'N/A'}
                 </td>
                 <td>${client.clientId}</td>
                 <td>${client.name}</td>

@@ -64,7 +64,7 @@
       <table>
         <thead>
           <tr>
-            <th>Avatar</th>
+            <th>Profile</th>
             <th>Client ID</th>
             <th>Name</th>
             <th>Business</th>
@@ -78,8 +78,8 @@
           <% clients.forEach(client => { %>
             <tr>
               <td>
-                <% if(client.avatar) { %>
-                  <img src="<%= client.avatar %>" alt="Avatar" width="40" height="40">
+                <% if(client.Profile) { %>
+                  <img src="<%= client.Profile %>" alt="Profile" width="40" height="40">
                 <% } else { %>
                   <span>No Image</span>
                 <% } %>

@@ -164,7 +164,7 @@ img {
   align-items: center;
   gap: 20px;
 }
-.profile-avatar {
+.profile-Profile {
   border-radius: 50%;
   width: 100px;
   height: 100px;
@@ -202,7 +202,7 @@ img {
   flex-grow: 1;
 }
 
-.profile-avatar {
+.profile-Profile {
   width: 120px;
   height: 120px;
   border-radius: 50%;
@@ -540,12 +540,12 @@ img {
 
 form {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 🔄 3 columns */
+  grid-template-columns: repeat(2, 1fr); /* 🔄 3 columns */
   gap: 20px 30px;
   padding: 30px;
   background-color: #ffffff;
   border-radius: 12px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+ 
   max-width: 100%;
 }
 
@@ -1081,3 +1081,53 @@ input, select {
   }
 }
 
+
+.form-container {
+  margin-bottom: 40px;
+  padding: 30px;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+  
+  border-radius: 12px;
+}
+
+.section-title {
+  color: #00488E;
+  margin-bottom: 20px;
+  font-size: 20px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+label {
+  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+}
+
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="date"],
+input[type="file"] {
+  margin-top: 6px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+button[type="submit"] {
+  padding: 10px 20px;
+  align-items:center;
+  background-color: #00488E;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+}

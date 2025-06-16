@@ -61,10 +61,10 @@
     <div class="main-content">
       <!-- Profile Section (Left Side) -->
       <div class="profile-section">
-        <% if (client.avatar) { %>
-          <img src="<%= client.avatar %>" alt="Avatar" class="profile-avatar">
+        <% if (client.Profile) { %>
+          <img src="<%= client.Profile %>" alt="Profile" class="profile-Profile">
         <% } else { %>
-          <img src="/default-avatar.png" alt="Avatar" class="profile-avatar">
+          <img src="/default-Profile.png" alt="Profile" class="profile-Profile">
         <% } %>
         
         <h1 style="color:#00488E;"><%= client.name %></h1>
