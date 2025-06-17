@@ -21,6 +21,12 @@ const clientSchema = new mongoose.Schema({
   industryType: { type: String },
   businessType: { type: String },
   Profile: { type: String },
+  status: {
+  type: String,
+  enum: ['Active', 'Inactive'],
+  default: 'Active'
+},
+
 }, {
   timestamps: true
 });

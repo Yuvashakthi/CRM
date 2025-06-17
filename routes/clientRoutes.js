@@ -16,15 +16,16 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// API Route to Create Client
-router.post('/api/clients', upload.single('Profile'), clientController.createClient);
 
 // API Route to Get Clients
 router.post('/api/clients', upload.single('Profile'), clientController.createClient);
 router.get('/clients', clientController.getClients);
 router.get('/clients/:clientId', clientController.getClientById);
-
+router.get('/api/clients/next-id', clientController.getNextClientId);
 router.delete('/clients/:id', clientController.deleteClient);
+router.get('/clients/edit/:clientId', clientController.editClientForm);
+router.post('/clients/update/:clientId', upload.single('Profile'), clientController.updateClient);
+
 
 
 module.exports = router;

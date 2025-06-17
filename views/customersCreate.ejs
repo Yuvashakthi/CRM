@@ -64,15 +64,19 @@
             <h2 class="section-title">Business Details</h2>
             <div class="form-grid">
               <label>Company Name <input type="text" name="companyName" required /></label>
-              <label>Client ID <input type="text" name="clientId" required /></label>
+              <label>Client ID
+                <input type="text" name="clientId" id="clientId" value="NP-CLI-001" readonly />
+              </label>
               <label>Phone Number <input type="tel" name="phone" required /></label>
               <label>Email <input type="email" name="email" required /></label>
-              <label>Address <input type="text" name="address" required /></label>
               <label>Role <input type="text" name="role" /></label>
               <label>Company Start Date <input type="date" name="companyStartDate" required /></label>
               <label>Company ID Number (GST) <input type="text" name="companyIdNumber" required /></label>
               <label>Industry Type <input type="text" name="industryType" /></label>
-              <label>Business Type <input type="text" name="businessType" /></label>
+              <label>Business Type <input type="text" name="businessType" /></label>           
+              <label>Address
+                <textarea name="address" rows="5"></textarea>
+              </label>
             </div>
           </div>
         
@@ -88,6 +92,13 @@
               <label>Marital Status <input type="text" name="maritalStatus" /></label>
               <label>Marriage Date <input type="date" name="marriageDate" /></label>
               <label>Profile <input type="file" name="Profile" accept="image/*" /></label>
+              <label>Status
+                <select name="status" required>
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                </select>
+              </label>
+              
               <label>House Address
                 <textarea name="houseAddress" rows="5"></textarea>
               </label>
@@ -109,31 +120,54 @@
 
   <script src="/script.js"></script>
   <script>
-      document.querySelector('form').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const formData = new FormData(e.target);
-
-        try {
-          const response = await fetch('/api/clients', {
-            method: 'POST',
-            body: formData,
-          });
-
-          const result = await response.json();
-
-          if (response.ok) {
-            alert('Client created successfully!');
-            e.target.reset(); // Reset form fields
-          } else {
-            alert(result.error || 'Failed to create client');
-          }
-        } catch (error) {
-          alert('Error creating client: ' + error.message);
+    // Fetch next client ID when form loads
+    window.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const res = await fetch('/api/clients/next-id');
+        const data = await res.json();
+        if (data.nextClientId) {
+          document.getElementById('clientId').value = data.nextClientId;
         }
-      });
-
-
+      } catch (err) {
+        console.error('Failed to fetch next client ID');
+      }
+    });
+  
+    // Handle form submission
+    document.querySelector('form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+  
+      const formData = new FormData(e.target);
+  
+      try {
+        const response = await fetch('/api/clients', {
+          method: 'POST',
+          body: formData,
+        });
+  
+        const result = await response.json();
+  
+        if (response.ok) {
+          const generatedId = result.client.clientId;
+          alert(`Client created successfully!\nClient ID: ${generatedId}`);
+  
+          // Reset form, and get next client ID
+          e.target.reset();
+  
+          const res = await fetch('/api/clients/next-id');
+          const data = await res.json();
+          if (data.nextClientId) {
+            document.getElementById('clientId').value = data.nextClientId;
+          }
+  
+        } else {
+          alert(result.error || 'Failed to create client');
+        }
+      } catch (error) {
+        alert('Error creating client: ' + error.message);
+      }
+    });
   </script>
+  
 </body>
 </html>

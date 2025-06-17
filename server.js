@@ -15,10 +15,10 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use('/uploads', express.static('uploads')); // to serve uploaded files
 app.use(express.static('public'));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/images', express.static(path.join(__dirname, 'public/images')));
+app.use('/uploads', express.static('public/uploads'));
 
 
 app.set('views', path.join(__dirname, 'views'));

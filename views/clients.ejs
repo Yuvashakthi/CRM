@@ -71,6 +71,8 @@
             <th>Phone</th>
             <th>Email</th>
             <th>Status</th>
+            <th>Action</th>
+
             
           </tr>
         </thead>
@@ -89,14 +91,63 @@
               <td><%= client.companyName %></td>
               <td><%= client.phone %></td>
               <td><%= client.email %></td>
+              <td><%= client.status || 'N/A' %></td>
               <td>
                 <button onclick="window.location.href='/clients/<%= client._id %>'">View</button>
+                <button onclick="openEditModal('<%= client._id %>')">Edit</button>
                 <button onclick="deleteClient('<%= client._id %>', this)">Delete</button>
               </td>
             </tr>
           <% }); %>
         </tbody>
       </table>
+
+
+      <!-- Edit Client Modal -->
+      <div id="editModal" class="modal" style="display: none;">
+        <div class="modal-box">
+          <h3>Edit Client</h3>
+          <form id="editClientForm" enctype="multipart/form-data">
+            <label>Client ID:
+              <input type="text" id="editClientId" name="clientId" readonly />
+            </label>
+
+            <label>Name:
+              <input type="text" id="editName" name="name" required />
+            </label>
+
+            <label>Business:
+              <input type="text" id="editCompanyName" name="companyName" required />
+            </label>
+
+            <label>Phone:
+              <input type="tel" id="editPhone" name="phone" required />
+            </label>
+
+            <label>Email:
+              <input type="email" id="editEmail" name="email" required />
+            </label>
+
+            <label>Status:
+              <select id="editStatus" name="status">
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+              </select>
+            </label>
+
+            <label>Profile Image:
+              <input type="file" id="editProfile" name="Profile" />
+            </label>
+
+            <div class="modal-buttons">
+              <button type="submit">Save</button>
+              <button type="button" onclick="closeModal()">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+
 
         
     </main>
@@ -131,7 +182,59 @@
         alert('Server error during deletion');
       }
     }
+
+
+    
+    async function openEditModal(clientId) {
+    try {
+      const res = await fetch(`/clients/${clientId}`, {
+        headers: { 'Accept': 'application/json' }
+      });
+      const client = await res.json();
+
+      document.getElementById('editClientId').value = client.clientId;
+      document.getElementById('editName').value = client.name;
+      document.getElementById('editCompanyName').value = client.companyName;
+      document.getElementById('editPhone').value = client.phone;
+      document.getElementById('editEmail').value = client.email;
+      document.getElementById('editStatus').value = client.status;
+
+      document.getElementById('editModal').style.display = 'flex';
+      document.getElementById('editClientForm').setAttribute('data-id', client._id);
+    } catch (err) {
+      alert('Failed to load client data');
+    }
+  }
+
+  function closeModal() {
+    document.getElementById('editModal').style.display = 'none';
+  }
+
+  document.getElementById('editClientForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const form = e.target;
+    const clientId = form.getAttribute('data-id');
+    const formData = new FormData(form);
+
+    try {
+      const response = await fetch(`/clients/update/${clientId}`, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (response.ok) {
+        alert('Client updated successfully');
+        closeModal();
+        location.reload();
+      } else {
+        alert('Failed to update client');
+      }
+    } catch (err) {
+      alert('Error updating client');
+    }
+  });
   </script>
   
+
 </body>
 </html>
