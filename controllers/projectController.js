@@ -6,7 +6,7 @@ exports.createProject = async (req, res) => {
   try {
     console.log("Received project creation request:", req.body);
 
-    const { clientId, projectName, projectId, projectType, assignedTo, startDate, endDate, status, cost } = req.body;
+    const { clientId, clientName, department, projectName, projectId, projectType, assignedTo, startDate, endDate, status, cost } = req.body;
 
     if (!clientId) {
       console.error("Client ID missing in request");
@@ -22,6 +22,8 @@ exports.createProject = async (req, res) => {
 
     const newProject = new Project({
       clientId,
+      clientName,
+      department,
       projectName,
       projectId,
       projectType,
@@ -90,5 +92,40 @@ exports.getProjectsByClientId = async (req, res) => {
   } catch (error) {
     console.error("Error fetching projects for client:", error);
     res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
+// Controller to fetch client by clientId or name (for auto-fill in frontend)
+exports.fetchClient = async (req, res) => {
+  try {
+    const { id, name } = req.query;
+    let client;
+
+    if (id) {
+      client = await Client.findOne({ clientId: id.trim() });
+    } else if (name) {
+      client = await Client.findOne({ name: name.trim() });
+    }
+
+    if (!client) {
+      return res.status(404).json({ error: "Client not found" });
+    }
+
+    res.status(200).json({ client });
+  } catch (error) {
+    console.error("Error fetching client:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+exports.updateProject = async (req, res) => {
+  try {
+    const updated = await Project.findByIdAndUpdate(req.params.projectId, req.body, { new: true });
+    if (!updated) return res.status(404).json({ error: 'Project not found' });
+
+    res.status(200).json({ message: 'Project updated successfully', project: updated });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
   }
 };

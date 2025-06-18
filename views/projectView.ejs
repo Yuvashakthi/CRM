@@ -77,7 +77,10 @@
               <td><%= project.clientId %></td>
               <td><%= project.projectType %></td>             
               <td>
-                <button onclick="showProjectDetails('<%= project._id %>')">View</button>
+                <a href="/clients/<%= project.clientId %>">
+                  <button>View</button>
+                </a>
+                <button onclick="openProjectEditModal('<%= project._id %>')">Edit</button>
               </td>
             </tr>
           <% }); %>
@@ -102,6 +105,48 @@
         <tr><th>Status:</th><td id="modalStatus"></td></tr>
         <tr><th>Worth:</th><td id="modalWorth"></td></tr>
       </table>
+
+      <!-- Edit Project Modal -->
+      <div id="editProjectModal" class="modal" style="display: none;">
+        <div class="modal-content">
+          <span class="close" onclick="closeProjectModal()">&times;</span>
+          <h2>Edit Project</h2>
+          <form id="editProjectForm">
+            <label>Project ID:
+              <input type="text" id="editProjectId" name="projectId" readonly />
+            </label>
+            <label>Client ID:
+              <input type="text" id="editClientId" name="clientId" readonly />
+            </label>
+            <label>Project Name:
+              <input type="text" id="editProjectName" name="projectName" required />
+            </label>
+            <label>Project Type:
+              <input type="text" id="editProjectType" name="projectType" />
+            </label>
+            <label>Assigned To:
+              <input type="text" id="editAssignedTo" name="assignedTo" />
+            </label>
+            <label>Start Date:
+              <input type="date" id="editStartDate" name="startDate" />
+            </label>
+            <label>End Date:
+              <input type="date" id="editEndDate" name="endDate" />
+            </label>
+            <label>Status:
+              <input type="text" id="editStatus" name="status" />
+            </label>
+            <label>Worth (INR):
+              <input type="number" id="editCost" name="cost" />
+            </label>
+            <div style="margin-top: 10px;">
+              <button type="submit">Save</button>
+              <button type="button" onclick="closeProjectModal()">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -129,6 +174,66 @@
     function closeModal() {
       document.getElementById("projectModal").style.display = "none";
     }
+
+
+    
+      async function openProjectEditModal(projectId) {
+        try {
+          const res = await fetch(`/api/projects/${projectId}`);
+          const data = await res.json();
+
+          const project = data.project;
+          document.getElementById('editProjectId').value = project.projectId;
+          document.getElementById('editClientId').value = project.clientId;
+          document.getElementById('editProjectName').value = project.projectName;
+          document.getElementById('editProjectType').value = project.projectType;
+          document.getElementById('editAssignedTo').value = project.assignedTo || '';
+          document.getElementById('editStartDate').value = project.startDate ? project.startDate.split('T')[0] : '';
+          document.getElementById('editEndDate').value = project.endDate ? project.endDate.split('T')[0] : '';
+          document.getElementById('editStatus').value = project.status || '';
+          document.getElementById('editCost').value = project.cost || '';
+
+          document.getElementById('editProjectForm').setAttribute('data-id', project._id);
+          document.getElementById('editProjectModal').style.display = 'block';
+        } catch (err) {
+          console.error('Failed to load project data:', err);
+          alert('Error loading project details.');
+        }
+      }
+
+      function closeProjectModal() {
+        document.getElementById('editProjectModal').style.display = 'none';
+      }
+
+      document.getElementById('editProjectForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const form = e.target;
+        const projectId = form.getAttribute('data-id');
+
+        const formData = new URLSearchParams(new FormData(form)).toString();
+
+        try {
+          const res = await fetch(`/projects/update/${projectId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: formData
+          });
+
+          if (res.ok) {
+            alert('Project updated successfully.');
+            closeProjectModal();
+            location.reload();
+          } else {
+            const error = await res.json();
+            alert(error.error || 'Update failed');
+          }
+        } catch (err) {
+          console.error('Update error:', err);
+          alert('Server error');
+        }
+      });
+
+
 
   </script>
 </body>

@@ -104,12 +104,17 @@ exports.getClients = async (req, res) => {
 exports.getClientById = async (req, res) => {
   try {
     const client = await Client.findById(req.params.clientId);
-
     if (!client) {
       return res.status(404).send('Client not found');
     }
-    res.render('customersView', { client });
 
+    // If the request expects JSON (e.g., from fetch API)
+    if (req.headers.accept && req.headers.accept.includes('application/json')) {
+      return res.json(client);
+    }
+
+    // Else, render the view (normal browser request)
+    res.render('customersView', { client });
   } catch (error) {
     res.status(500).send(error.message);
   }
@@ -139,7 +144,6 @@ exports.editClientForm = async (req, res) => {
   }
 };
 
-// Update Client
 exports.updateClient = async (req, res) => {
   try {
     const updateData = { ...req.body };
@@ -150,9 +154,8 @@ exports.updateClient = async (req, res) => {
     const updated = await Client.findByIdAndUpdate(req.params.clientId, updateData, { new: true });
     if (!updated) return res.status(404).send('Client not found');
 
-    res.redirect('/clients');
+    res.status(200).json({ message: 'Updated successfully' }); // return JSON response
   } catch (error) {
     res.status(500).send(error.message);
   }
 };
-

@@ -104,9 +104,9 @@
 
 
       <!-- Edit Client Modal -->
-      <div id="editModal" class="modal" style="display: none;">
+      <div id="editModal" class="modal-edit" style="display: none;">
         <div class="modal-box">
-          <h3>Edit Client</h3>
+          <h3>Client Details</h3>
           <form id="editClientForm" enctype="multipart/form-data">
             <label>Client ID:
               <input type="text" id="editClientId" name="clientId" readonly />
@@ -197,19 +197,22 @@
       document.getElementById('editCompanyName').value = client.companyName;
       document.getElementById('editPhone').value = client.phone;
       document.getElementById('editEmail').value = client.email;
-      document.getElementById('editStatus').value = client.status;
+      document.getElementById('editStatus').value = client.status || 'Active';
 
-      document.getElementById('editModal').style.display = 'flex';
       document.getElementById('editClientForm').setAttribute('data-id', client._id);
+      document.getElementById('editModal').style.display = 'flex';
     } catch (err) {
+      console.error(err);
       alert('Failed to load client data');
     }
   }
 
+  // Close Modal
   function closeModal() {
     document.getElementById('editModal').style.display = 'none';
   }
 
+  // Submit Updated Form
   document.getElementById('editClientForm').addEventListener('submit', async function (e) {
     e.preventDefault();
     const form = e.target;
@@ -225,11 +228,13 @@
       if (response.ok) {
         alert('Client updated successfully');
         closeModal();
-        location.reload();
+        location.reload(); // refresh table to show updated values
       } else {
-        alert('Failed to update client');
+        const error = await response.text();
+        alert('Failed to update client: ' + error);
       }
     } catch (err) {
+      console.error(err);
       alert('Error updating client');
     }
   });
