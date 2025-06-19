@@ -68,11 +68,20 @@ exports.getProjectById = async (req, res) => {
 
 
 
-// Controller to render all projects in projectView.ejs
 exports.renderAllProjects = async (req, res) => {
   try {
     const projects = await Project.find({});
-    res.render("projectView", { projects });
+    const clients = await Client.find({});
+
+    const enrichedProjects = projects.map(project => {
+      const client = clients.find(c => c.clientId === project.clientId);
+      return {
+        ...project.toObject(),
+        clientObjectId: client ? client._id : null
+      };
+    });
+
+    res.render("projectView", { projects: enrichedProjects });
   } catch (error) {
     console.error("Error loading projectView:", error);
     res.status(500).send("Error loading project view.");
