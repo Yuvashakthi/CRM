@@ -1,4 +1,4 @@
-<!-- invoiceView.ejs - Updated with Edit functionality -->
+<!-- invoiceView.ejs - Fully Updated with Dynamic Calculation -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,10 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CRM - Navi Promotions</title>
   <link rel="stylesheet" href="/styles.css" />
+ 
 </head>
 <body>
   <div class="container">
-    <!-- Sidebar Navigation -->
     <aside class="sidebar">
       <h2>CRM</h2>
       <ul>
@@ -43,6 +43,13 @@
 
     <main class="content" id="content">
       <h1>Invoice View</h1>
+
+      <div class="summary-box" id="summaryBox">
+        <div>Total Amount: ₹<span id="totalAmount">0.00</span></div>
+        <div>Paid Amount: ₹<span id="paidAmount">0.00</span></div>
+        <div>Balance Amount: ₹<span id="balanceAmount">0.00</span></div>
+      </div>
+
       <table class="custom-table">
         <thead>
           <tr>
@@ -57,7 +64,7 @@
         </thead>
         <tbody>
           <% invoices.forEach(invoice => { %>
-            <tr>
+            <tr class="invoice-row" data-amount="<%= invoice.dueAmount %>" data-status="<%= invoice.status %>">
               <td><%= invoice.invoiceId %></td>
               <td><%= invoice.clientId %></td>
               <td><%= new Date(invoice.creationDate).toLocaleDateString() %></td>
@@ -71,14 +78,12 @@
                 <% } else { %>
                   <span class="no-file">N/A</span>
                 <% } %>
-               
               </td>
             </tr>
           <% }) %>
         </tbody>
       </table>
 
-      <!-- Edit Invoice Modal -->
       <div id="editInvoiceModal" class="modal-edit" style="display: none;">
         <div class="modal-content1">
           <span class="close" onclick="closeInvoiceModal()">&times;</span>
@@ -92,12 +97,13 @@
               <select name="status" id="editStatus" required>
                 <option value="Pending">Pending</option>
                 <option value="Paid">Paid</option>
+                <option value="Partially Paid">Partially Paid</option>
                 <option value="Overdue">Overdue</option>
               </select>
             </label>
             <label>Due Amount (INR): <input type="number" id="editDueAmount" name="dueAmount" required min="0" step="0.01" /></label>
             <div class="modal-buttons">
-              <button type="submit-btn">Save</button>
+              <button type="submit">Save</button>
               <button type="button" onclick="closeInvoiceModal()">Cancel</button>
             </div>
           </form>
@@ -153,9 +159,32 @@
           alert(error.error || 'Update failed');
         }
       } catch (err) {
-        console.error('Error updating invoice:', err);
+        console.error('Update error:', err);
         alert('Server error');
       }
+    });
+
+    // Dynamic Calculation Script
+    window.addEventListener('DOMContentLoaded', () => {
+      const rows = document.querySelectorAll('.invoice-row');
+      let total = 0, paid = 0;
+
+      rows.forEach(row => {
+        const amount = parseFloat(row.dataset.amount);
+        const status = row.dataset.status ? row.dataset.status.toLowerCase() : '';
+
+        if (!isNaN(amount)) {
+          total += amount;
+          if (status === 'paid' || status === 'partially paid') {
+            paid += amount;
+          }
+        }
+      });
+
+      const balance = total - paid;
+      document.getElementById('totalAmount').textContent = total.toFixed(2);
+      document.getElementById('paidAmount').textContent = paid.toFixed(2);
+      document.getElementById('balanceAmount').textContent = balance.toFixed(2);
     });
   </script>
 

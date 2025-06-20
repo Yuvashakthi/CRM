@@ -165,7 +165,7 @@
                 <select id="invStatus" disabled>
                   <option value="Pending">Pending</option>
                   <option value="Paid">Paid</option>
-                  <option value="Overdue">Overdue</option>
+                  <option value="Partially Paid">Partially Paid</option>
                 </select>
               </div>
 
@@ -388,7 +388,7 @@
     
         invoiceContainer.innerHTML = data.invoices.map(invoice => {
           
-          if (invoice.status === "Pending" || invoice.status === "Overdue") {
+          if (invoice.status === "Pending" || invoice.status === "Partially Paid") {
             totalDue += invoice.dueAmount;
           }
     
