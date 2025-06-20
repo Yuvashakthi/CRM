@@ -56,52 +56,7 @@ app.get('/billing', (req, res) => {
   res.render('billing'); // No leading slash, no .ejs
 });
 
-app.get('/customerView/:clientId', async (req, res) => {
-  try {
-      const clientId = req.params.clientId;
-      
-      // Get both client and their projects
-      const client = await Client.findOne({ clientId: clientId });
-      const projects = await Project.find({ clientId: clientId });
-      
-      if (!client) {
-          return res.status(404).send('Client not found');
-      }
-      
-      res.render('customerView', { 
-          client: client,
-          projects: projects,
-          clientId: clientId 
-      });
-      
-  } catch (error) {
-      console.error('Error:', error);
-      res.status(500).json({ error: error.message });
-  }
-});
 
-
-app.get('/customerView/:clientId', async (req, res) => {
-  try {
-      const clientId = req.params.clientId;
-      
-      // ✅ Find the actual client, not project
-      const client = await Client.findOne({ clientId: clientId });
-      
-      if (!client) {
-          return res.status(404).send('Client not found');
-      }
-      
-      res.render('customerView', { 
-          client: client,
-          clientId: clientId 
-      });
-      
-  } catch (error) {
-      console.error('Error:', error);
-      res.status(500).json({ error: error.message });
-  }
-});
 //  Start Server
 app.listen(3000, () => {
   console.log('Server running on http://localhost:3000');

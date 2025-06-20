@@ -51,7 +51,7 @@ exports.createProject = async (req, res) => {
 exports.getProjectById = async (req, res) => {
   try {
     const { projectId } = req.params;
-    const project = await Project.findOne({ projectId });
+    const project = await Project.findById(projectId); // Use _id not projectId field
 
     if (!project) {
       return res.status(404).json({ error: "Project not found" });
@@ -134,10 +134,13 @@ exports.updateProject = async (req, res) => {
   try {
     const updated = await Project.findByIdAndUpdate(req.params.projectId, req.body, { new: true });
     if (!updated) return res.status(404).json({ error: 'Project not found' });
+
     res.status(200).json({ message: 'Project updated successfully', project: updated });
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
   }
 };
+
+
 
 

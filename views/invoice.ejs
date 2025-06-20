@@ -61,6 +61,9 @@
         <form id="invoiceForm" action="/create" method="POST" enctype="multipart/form-data" class="invoice-form">
             <label>Invoice ID:</label>
             <input type="text" name="invoiceId" required><br>
+
+            <label>Client ID:</label>
+            <input type="text" name="clientId" required><br>
     
             <label>Creation Date:</label>
             <input type="date" name="creationDate" required><br>
@@ -74,9 +77,6 @@
                 <option value="Paid">Paid</option>
                 <option value="Overdue">Overdue</option>
             </select><br>
-    
-            <label>Client ID:</label>
-            <input type="text" name="clientId" required><br>
     
             <label>Due Amount:</label>
             <input type="number" name="dueAmount" required><br>

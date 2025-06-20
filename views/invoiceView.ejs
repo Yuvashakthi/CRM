@@ -1,3 +1,4 @@
+<!-- invoiceView.ejs - Updated with Edit functionality -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,56 +14,43 @@
       <h2>CRM</h2>
       <ul>
         <li><a href="/dashboard">Dashboard</a></li>
-        
-        <!-- Customers Dropdown -->
-        <li>
-          <a href="#" class="dropdown" onclick="toggleDropdown('customerDropdown')">Customers ▾</a>
+        <li><a href="#" class="dropdown" onclick="toggleDropdown('customerDropdown')">Customers ▾</a>
           <ul id="customerDropdown" class="dropdown-menu">
             <li><a href="/clients">Clients</a></li>
             <li><a href="/customersCreate">Create Client</a></li>
           </ul>
         </li>
-
-        <!-- Projects Dropdown -->
-        <li>
-          <a href="#" class="dropdown" onclick="toggleDropdown('projectDropdown')">Projects ▾</a>
+        <li><a href="#" class="dropdown" onclick="toggleDropdown('projectDropdown')">Projects ▾</a>
           <ul id="projectDropdown" class="dropdown-menu">
             <li><a href="/projectView">Project View</a></li>
             <li><a href="/projectCreate">Project Create</a></li>
           </ul>
         </li>
-
-           <!-- Invoice Dropdown -->
-        <li>
-          <a href="#" class="dropdown" onclick="toggleDropdown('invoiceDropdown')">Invoices ▾</a>
+        <li><a href="#" class="dropdown" onclick="toggleDropdown('invoiceDropdown')">Invoices ▾</a>
           <ul id="invoiceDropdown" class="dropdown-menu">
             <li><a href="/invoiceView">Invoice View</a></li>
             <li><a href="/invoice">Invoice Create</a></li>
           </ul>
         </li>
-        <!-- Billing Dropdown -->
-        <li>
-          <a href="#" class="dropdown" onclick="toggleDropdown('billingDropdown')">Billings ▾</a>
+        <li><a href="#" class="dropdown" onclick="toggleDropdown('billingDropdown')">Billings ▾</a>
           <ul id="billingDropdown" class="dropdown-menu">
             <li><a href="/billingView">View Billings</a></li>
             <li><a href="/billing">Create Billing</a></li>
           </ul>
         </li>
-         
       </ul>
     </aside>
 
     <main class="content" id="content">
       <h1>Invoice View</h1>
-  
       <table class="custom-table">
         <thead>
           <tr>
             <th>Invoice ID</th>
+            <th>Client ID</th>
             <th>Creation Date</th>
             <th>Due Date</th>
             <th>Status</th>
-            <th>Client ID</th>
             <th>Due Amount</th>
             <th>Actions</th>
           </tr>
@@ -71,33 +59,105 @@
           <% invoices.forEach(invoice => { %>
             <tr>
               <td><%= invoice.invoiceId %></td>
+              <td><%= invoice.clientId %></td>
               <td><%= new Date(invoice.creationDate).toLocaleDateString() %></td>
               <td><%= new Date(invoice.dueDate).toLocaleDateString() %></td>
               <td><%= invoice.status %></td>
-              <td><%= invoice.clientId %></td>
-              <td> <%= invoice.dueAmount.toFixed(2) %></td>
+              <td><%= invoice.dueAmount.toFixed(2) %></td>
               <td>
+                <button onclick="openInvoiceEditModal('<%= invoice.invoiceId %>')">Edit</button>
                 <% if (invoice.filePath) { %>
-                  <a  href="/invoices/download/<%= invoice.invoiceId %>" class="view-btn">Download</a>
-
+                  <a href="/invoices/download/<%= invoice.invoiceId %>" class="view-btn">Download</a>
                 <% } else { %>
                   <span class="no-file">N/A</span>
                 <% } %>
+               
               </td>
             </tr>
           <% }) %>
         </tbody>
       </table>
-      
+
+      <!-- Edit Invoice Modal -->
+      <div id="editInvoiceModal" class="modal-edit" style="display: none;">
+        <div class="modal-content1">
+          <span class="close" onclick="closeInvoiceModal()">&times;</span>
+          <h3>Edit Invoice</h3>
+          <form id="editInvoiceForm">
+            <label>Invoice ID: <input type="text" id="editInvoiceId" name="invoiceId" readonly /></label>
+            <label>Client ID: <input type="text" id="editClientId" name="clientId" readonly /></label>
+            <label>Creation Date: <input type="date" id="editCreationDate" name="creationDate" required /></label>
+            <label>Due Date: <input type="date" id="editDueDate" name="dueDate" required /></label>
+            <label>Status:
+              <select name="status" id="editStatus" required>
+                <option value="Pending">Pending</option>
+                <option value="Paid">Paid</option>
+                <option value="Overdue">Overdue</option>
+              </select>
+            </label>
+            <label>Due Amount (INR): <input type="number" id="editDueAmount" name="dueAmount" required min="0" step="0.01" /></label>
+            <div class="modal-buttons">
+              <button type="submit-btn">Save</button>
+              <button type="button" onclick="closeInvoiceModal()">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
     </main>
-
-  
   </div>
-    
 
+  <script>
+    function openInvoiceEditModal(invoiceId) {
+      fetch(`/invoices/${invoiceId}`)
+        .then(res => res.json())
+        .then(invoice => {
+          document.getElementById('editInvoiceId').value = invoice.invoiceId;
+          document.getElementById('editClientId').value = invoice.clientId;
+          document.getElementById('editCreationDate').value = new Date(invoice.creationDate).toISOString().split("T")[0];
+          document.getElementById('editDueDate').value = new Date(invoice.dueDate).toISOString().split("T")[0];
+          document.getElementById('editStatus').value = invoice.status;
+          document.getElementById('editDueAmount').value = invoice.dueAmount;
 
-    
- 
+          document.getElementById('editInvoiceForm').setAttribute('data-id', invoice.invoiceId);
+          document.getElementById('editInvoiceModal').style.display = 'block';
+        })
+        .catch(err => {
+          console.error('Error loading invoice:', err);
+          alert('Failed to load invoice details.');
+        });
+    }
+
+    function closeInvoiceModal() {
+      document.getElementById('editInvoiceModal').style.display = 'none';
+    }
+
+    document.getElementById('editInvoiceForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const form = e.target;
+      const invoiceId = form.getAttribute('data-id');
+      const formData = new URLSearchParams(new FormData(form)).toString();
+
+      try {
+        const res = await fetch(`/invoices/${invoiceId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: formData
+        });
+
+        if (res.ok) {
+          alert('Invoice updated successfully.');
+          closeInvoiceModal();
+          location.reload();
+        } else {
+          const error = await res.json();
+          alert(error.error || 'Update failed');
+        }
+      } catch (err) {
+        console.error('Error updating invoice:', err);
+        alert('Server error');
+      }
+    });
+  </script>
 
   <script src="/script.js"></script>
 </body>

@@ -43,6 +43,8 @@
         </li>
 
          <!-- Billing Dropdown -->
+
+         <!-- Billing Dropdown -->
          <li>
           <a href="#" class="dropdown" onclick="toggleDropdown('billingDropdown')">Billings ▾</a>
           <ul id="billingDropdown" class="dropdown-menu">
@@ -58,214 +60,149 @@
     <main class="content">
       <h1>Project List</h1>
       <table>
+        <thead>
           <thead>
-              <tr>
-                  <th>Project ID</th>
-                  <th>Project Name</th>
-                  <th>Client ID</th>
-                  <th>Client Name</th>
-                  <th>Department</th>
-                  <th>Project Type</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-              </tr>
+            <tr>
+              <th>Project ID</th>
+              <th>Project Name</th>
+              <th>Client ID</th>
+              <th>Client Name</th>
+              <th>Department</th>
+              <th>Assigned To</th> 
+              <th>Project Type</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
           </thead>
-          <tbody>
-              <% projects.forEach(project => { %>
-              <tr>
-                  <td><%= project.projectId %></td>
-                  <td><%= project.projectName %></td>
-                  <td><%= project.clientId %></td>
-                  <td><%= project.clientName %></td>
-                  <td><%= project.department %></td>
-                  <td><%= project.projectType %></td>
-                  <td><%= project.status %></td>
-                  <td>
-                    <button onclick="window.location.href='/customerView/<%= project.clientId %>'">View</button>
-                    <button onclick="openProjectEditModal('<%= project.clientId %>')">Edit</button>
-                  </td>
-
-              <% }); %>
-          </tbody>
+        </thead>
+        <tbody>
+          <% projects.forEach(project => { %>
+            <tr>
+              <td><%= project.projectId %></td>
+              <td><%= project.projectName %></td>
+              <td><%= project.clientId %></td>
+              <td><%= project.clientName %></td>
+              <td><%= project.department %></td>
+              <td><%= project.assignedTo %></td>
+              <td><%= project.projectType %></td>
+              <td><%= project.status %></td>
+              <td>
+                <a href="/clients/<%= project.clientObjectId %>">
+                  <button>View</button>
+                </a>
+                
+                <button class="edit-btn" onclick="openProjectEditModal('<%= project._id %>')">Edit</button>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
       </table>
-
-      <!-- Project Details Modal -->
-      <div id="projectDetailsModal" class="modal-edit" style="display: none;">
-        <div class="modal-box">
-          <h3>Project Details</h3>
-          <div class="project-details">
-            <label>Project ID:
-              <input type="text" id="projId" readonly />
-            </label>
-
-            <label>Project Name:
-              <input type="text" id="projName" disabled />
-            </label>
-
-            <label>Client ID:
-              <input type="text" id="projClientId" readonly />
-            </label>
-
-            <label>Client Name:
-              <input type="text" id="projClientName" disabled />
-            </label>
-
-            <label>Department:
-              <input type="text" id="projDepartment" disabled />
-            </label>
-
-            <label>Project Type:
-              <input type="text" id="projType" disabled />
-            </label>
-
-            <label>Assigned To:
-              <input type="text" id="projAssigned" disabled />
-            </label>
-
-            <label>Start Date:
-              <input type="date" id="projStart" disabled />
-            </label>
-
-            <label>End Date:
-              <input type="date" id="projEnd" disabled />
-            </label>
-
-            <label>Status:
-              <input type="text" id="projStatus" disabled />
-            </label>
-
-            <label>Worth/Cost:
-              <input type="number" id="projWorth" disabled />
-            </label>
-
-            <div class="modal-buttons">
-              <button type="button" onclick="enableProjectEditing()">Edit</button>
-              <button type="button" id="saveProjectBtn" onclick="saveProjectChanges()" style="display: none;">Save</button>
-              <button type="button" onclick="closeProjectDetailsModal()">Close</button>
+           <!-- Edit Project Modal -->
+           <div id="editProjectModal" class="modal-edit" style="display: none;">
+            <div class="modal-content">
+              <span class="close" onclick="closeProjectModal()">&times;</span>
+              <h3>Edit Project</h3>
+              <form id="editProjectForm">
+                <label>Project ID: <input type="text" id="editProjectId" name="projectId" readonly /></label>
+                <label>Client ID: <input type="text" id="editClientId" name="clientId" readonly /></label>
+                <label>Client Name: <input type="text" id="editClientName" name="clientName" required /></label>
+                <label>Department:
+                  <select name="department" id="editDepartment" onchange="updateAssignedToEdit()" required>
+                    <option value="">Select</option>
+                    <option value="Development">Development</option>
+                    <option value="Graphic Designing">Graphic Designing</option>
+                  </select>
+                </label>
+                <label>Assigned To:
+                  <select name="assignedTo" id="editAssignedTo" required>
+                    <option value="">Select</option>
+                  </select>
+                </label>
+                <label>Project Name: <input type="text" id="editProjectName" name="projectName" required /></label>
+                <label>Project Type: <input type="text" id="editProjectType" name="projectType" /></label>
+                <label>Start Date: <input type="date" id="editStartDate" name="startDate" /></label>
+                <label>End Date: <input type="date" id="editEndDate" name="endDate" /></label>
+                <label>Status: <input type="text" id="editStatus" name="status" /></label>
+                <label>Worth (INR): <input type="text" id="editCost" name="cost" /></label>
+                <div class="modal-buttons">
+                  <button type="submit-btn">Save</button>
+                  <button type="button" onclick="closeProjectModal()">Cancel</button>
+                </div>
+              </form>
             </div>
           </div>
-        </div>
+        </main>
       </div>
 
-      <!-- Edit Project Modal -->
-      <div id="editProjectModal" class="modal">
-        <div class="modal-content">
-          <span class="close" onclick="closeProjectModal()">&times;</span>
-          <h2>Edit Project</h2>
-          <form id="editProjectForm">
-            <label>Project ID: <input type="text" id="editProjectId" name="projectId" readonly /></label>
-            <label>Client ID: <input type="text" id="editClientId" name="clientId" readonly /></label>
-            <label>Client Name: <input type="text" id="editClientName" name="clientName" /></label>
-            <label>Department: <input type="text" id="editDepartment" name="department" /></label>
-            <label>Project Name: <input type="text" id="editProjectName" name="projectName" required /></label>
-            <label>Project Type: <input type="text" id="editProjectType" name="projectType" /></label>
-            <label>Status: <input type="text" id="editStatus" name="status" /></label>
-            <div style="margin-top: 10px;">
-              <button type="submit">Save</button>
-              <button type="button" onclick="closeProjectModal()">Cancel</button>
-            </div>
-          </form>
-        </div>
-      </div>
-      
-    </main>
+  <!-- Modal Popup -->
+  <div id="projectModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h2>Project Details</h2>
+      <table>
+        <tr><th>Project Name:</th><td id="modalProjectName"></td></tr>
+        <tr><th>Project ID:</th><td id="modalProjectId"></td></tr>
+        <tr><th>Client ID:</th><td id="modalClientId"></td></tr>
+        <tr><th>Project Type:</th><td id="modalProjectType"></td></tr>
+        <tr><th>Assigned To:</th><td id="modalAssignedTo"></td></tr>
+        <tr><th>Start Date:</th><td id="modalStartDate"></td></tr>
+        <tr><th>End Date:</th><td id="modalEndDate"></td></tr>
+        <tr><th>Status:</th><td id="modalStatus"></td></tr>
+        <tr><th>Worth:</th><td id="modalWorth"></td></tr>
+      </table>
+
     
+
+    </div>
   </div>
 
   <script src="/script.js"></script>
   <script>
-    let currentProjectId = null;
+    function showProjectDetails(projectId) {
+      fetch(`/projects/${projectId}`)
+        .then(response => response.json())
+        .then(project => {
+          document.getElementById("modalProjectName").textContent = project.projectName;
+          document.getElementById("modalProjectId").textContent = project.projectId;
+          document.getElementById("modalClientId").textContent = project.clientId;
+          document.getElementById("modalProjectType").textContent = project.projectType;
+          document.getElementById("modalAssignedTo").textContent = project.assignedTo;
+          document.getElementById("modalStartDate").textContent = project.startDate ? new Date(project.startDate).toDateString() : "N/A";
+          document.getElementById("modalEndDate").textContent = project.endDate ? new Date(project.endDate).toDateString() : "N/A";
+          document.getElementById("modalStatus").textContent = project.status;
+          document.getElementById("modalWorth").textContent = `₹${project.cost || project.worth}`;
 
-    // View Project Function - Similar to clients.ejs view functionality
-    async function viewProject(projectId) {
-      try {
-        const res = await fetch(`/api/projects/${projectId}`, {
-          headers: { 'Accept': 'application/json' }
+          document.getElementById("projectModal").style.display = "block";
+        })
+        .catch(error => console.error("Error fetching project details:", error));
+    }
+
+    function closeModal() {
+      document.getElementById("projectModal").style.display = "none";
+    }
+
+
+
+    const teamMap = {
+       "Development": ["Manjubashini", "Yuvashakthi", "Jacinth Sharon"],
+      "Graphic Designing": ["Sathees Kumar", "Manoj Kumar"]
+    };
+
+    function updateAssignedToEdit() {
+      const department = document.getElementById('editDepartment').value;
+      const assignedToSelect = document.getElementById('editAssignedTo');
+
+      assignedToSelect.innerHTML = '<option value="">Select</option>';
+      if (department && teamMap[department]) {
+        teamMap[department].forEach(member => {
+          const option = document.createElement('option');
+          option.value = member;
+          option.text = member;
+          assignedToSelect.appendChild(option);
         });
-        
-        if (!res.ok) {
-          throw new Error('Failed to fetch project data');
-        }
-        
-        const data = await res.json();
-        const project = data.project;
-
-        // Populate the modal with project data
-        document.getElementById('projId').value = project.projectId || '';
-        document.getElementById('projName').value = project.projectName || '';
-        document.getElementById('projClientId').value = project.clientId || '';
-        document.getElementById('projClientName').value = project.clientName || '';
-        document.getElementById('projDepartment').value = project.department || '';
-        document.getElementById('projType').value = project.projectType || '';
-        document.getElementById('projAssigned').value = project.assignedTo || '';
-        document.getElementById('projStart').value = project.startDate ? new Date(project.startDate).toISOString().split('T')[0] : '';
-        document.getElementById('projEnd').value = project.endDate ? new Date(project.endDate).toISOString().split('T')[0] : '';
-        document.getElementById('projStatus').value = project.status || '';
-        document.getElementById('projWorth').value = project.cost || project.worth || '';
-
-        // Store current project ID for editing
-        currentProjectId = project._id;
-
-        // Show the modal
-        document.getElementById('projectDetailsModal').style.display = 'flex';
-      } catch (err) {
-        console.error('Error fetching project details:', err);
-        alert('Failed to load project details');
       }
     }
 
-    // Close Project Details Modal
-    function closeProjectDetailsModal() {
-      document.getElementById('projectDetailsModal').style.display = 'none';
-      // Reset fields to disabled state
-      const fields = ["projName", "projType", "projAssigned", "projStart", "projEnd", "projStatus", "projWorth"];
-      fields.forEach(id => document.getElementById(id).disabled = true);
-      document.getElementById("saveProjectBtn").style.display = "none";
-    }
-
-    // Enable Project Editing
-    function enableProjectEditing() {
-      const fields = ["projName", "projType", "projAssigned", "projStart", "projEnd", "projStatus", "projWorth"];
-      fields.forEach(id => document.getElementById(id).disabled = false);
-      document.getElementById("saveProjectBtn").style.display = "inline-block";
-    }
-
-    // Save Project Changes
-    async function saveProjectChanges() {
-      const updatedData = {
-        projectName: document.getElementById("projName").value,
-        projectType: document.getElementById("projType").value,
-        assignedTo: document.getElementById("projAssigned").value,
-        startDate: document.getElementById("projStart").value,
-        endDate: document.getElementById("projEnd").value,
-        status: document.getElementById("projStatus").value,
-        cost: parseFloat(document.getElementById("projWorth").value) || 0
-      };
-
-      try {
-        const res = await fetch(`/projects/update/${currentProjectId}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(updatedData)
-        });
-
-        const result = await res.json();
-
-        if (!res.ok) {
-          alert(result.error || "Failed to update project");
-          return;
-        }
-
-        alert("Project updated successfully!");
-        closeProjectDetailsModal();
-        location.reload();
-      } catch (err) {
-        console.error("Error updating project:", err);
-        alert("Server error");
-      }
-    }
-
-    // Edit Project Modal Functions
     async function openProjectEditModal(projectId) {
       try {
         const res = await fetch(`/api/projects/${projectId}`);
@@ -276,9 +213,14 @@
         document.getElementById('editClientId').value = project.clientId;
         document.getElementById('editClientName').value = project.clientName || '';
         document.getElementById('editDepartment').value = project.department || '';
-        document.getElementById('editProjectName').value = project.projectName;
-        document.getElementById('editProjectType').value = project.projectType;
+        updateAssignedToEdit();
+        document.getElementById('editAssignedTo').value = project.assignedTo || '';
+        document.getElementById('editProjectName').value = project.projectName || '';
+        document.getElementById('editProjectType').value = project.projectType || '';
+        document.getElementById('editStartDate').value = project.startDate ? new Date(project.startDate).toISOString().split("T")[0] : '';
+        document.getElementById('editEndDate').value = project.endDate ? new Date(project.endDate).toISOString().split("T")[0] : '';
         document.getElementById('editStatus').value = project.status || '';
+        document.getElementById('editCost').value = project.cost || '';
 
         document.getElementById('editProjectForm').setAttribute('data-id', project._id);
         document.getElementById('editProjectModal').style.display = 'block';
@@ -318,35 +260,10 @@
         alert('Server error');
       }
     });
+ 
 
-    // Show Project Details (Alternative function if needed)
-    function showProjectDetails(projectId) {
-      fetch(`/projects/${projectId}`)
-        .then(response => response.json())
-        .then(project => {
-          document.getElementById("modalProjectName").textContent = project.projectName;
-          document.getElementById("modalProjectId").textContent = project.projectId;
-          document.getElementById("modalClientId").textContent = project.clientId;
-          document.getElementById("modalProjectType").textContent = project.projectType;
-          document.getElementById("modalAssignedTo").textContent = project.assignedTo;
-          document.getElementById("modalStartDate").textContent = project.startDate ? new Date(project.startDate).toDateString() : "N/A";
-          document.getElementById("modalEndDate").textContent = project.endDate ? new Date(project.endDate).toDateString() : "N/A";
-          document.getElementById("modalStatus").textContent = project.status;
-          document.getElementById("modalWorth").textContent = `₹${project.cost || project.worth}`;
 
-          document.getElementById("projectModal").style.display = "block";
-        })
-        .catch(error => console.error("Error fetching project details:", error));
-    }
 
-    function closeModal() {
-      document.getElementById("projectModal").style.display = "none";
-    }
-
-    // View Client function (if you want to keep the redirect to client page)
-    function viewClient(clientId) {
-      window.location.href = `/clients/${clientId}`;
-    }
 
   </script>
 </body>
