@@ -7,7 +7,8 @@ const projectRoutes = require('./routes/projectRoutes');
 const invoiceRoutes = require('./routes/invoiceRoutes');
 const billingRoutes = require('./routes/billingRoutes');
 const { renderInvoiceView } = require('./controllers/invoiceController');
-
+const Project = require('./models/Project');
+const Client = require('./models/Client');
 const indexRoutes = require('./routes/index');
 
 dotenv.config();
@@ -41,7 +42,6 @@ app.use(projectRoutes);
 
 app.get('/invoiceView', renderInvoiceView);
 
-
 // Redirect to dashboard if root is accessed
 app.get('/', (req, res) => {
   res.redirect('/dashboard');
@@ -54,6 +54,53 @@ app.get('/invoice', (req, res) => {
 
 app.get('/billing', (req, res) => {
   res.render('billing'); // No leading slash, no .ejs
+});
+
+app.get('/customerView/:clientId', async (req, res) => {
+  try {
+      const clientId = req.params.clientId;
+      
+      // Get both client and their projects
+      const client = await Client.findOne({ clientId: clientId });
+      const projects = await Project.find({ clientId: clientId });
+      
+      if (!client) {
+          return res.status(404).send('Client not found');
+      }
+      
+      res.render('customerView', { 
+          client: client,
+          projects: projects,
+          clientId: clientId 
+      });
+      
+  } catch (error) {
+      console.error('Error:', error);
+      res.status(500).json({ error: error.message });
+  }
+});
+
+
+app.get('/customerView/:clientId', async (req, res) => {
+  try {
+      const clientId = req.params.clientId;
+      
+      // ✅ Find the actual client, not project
+      const client = await Client.findOne({ clientId: clientId });
+      
+      if (!client) {
+          return res.status(404).send('Client not found');
+      }
+      
+      res.render('customerView', { 
+          client: client,
+          clientId: clientId 
+      });
+      
+  } catch (error) {
+      console.error('Error:', error);
+      res.status(500).json({ error: error.message });
+  }
 });
 //  Start Server
 app.listen(3000, () => {

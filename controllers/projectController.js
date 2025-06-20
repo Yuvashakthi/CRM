@@ -81,12 +81,14 @@ exports.renderAllProjects = async (req, res) => {
       };
     });
 
-    res.render("projectView", { projects: enrichedProjects });
+    res.render("projectView", { projects: enrichedProjects }); // ✅ Do not render 'clients'
   } catch (error) {
     console.error("Error loading projectView:", error);
     res.status(500).send("Error loading project view.");
   }
 };
+
+
 
 exports.getProjectsByClientId = async (req, res) => {
   try {
@@ -132,9 +134,10 @@ exports.updateProject = async (req, res) => {
   try {
     const updated = await Project.findByIdAndUpdate(req.params.projectId, req.body, { new: true });
     if (!updated) return res.status(404).json({ error: 'Project not found' });
-
     res.status(200).json({ message: 'Project updated successfully', project: updated });
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
   }
 };
+
+
