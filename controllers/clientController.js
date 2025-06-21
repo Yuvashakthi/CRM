@@ -159,3 +159,14 @@ exports.updateClient = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
+
+
+exports.getClientList = async (req, res) => {
+  try {
+    const clients = await Client.find({}, 'clientId'); // Only fetch clientId
+    res.json({ clients });
+  } catch (err) {
+    console.error('Error fetching client list:', err);
+    res.status(500).json({ error: 'Failed to fetch client list' });
+  }
+};

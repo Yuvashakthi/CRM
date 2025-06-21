@@ -62,8 +62,10 @@
             <label>Invoice ID:</label>
             <input type="text" name="invoiceId" required><br>
 
-            <label>Client ID:</label>
-            <input type="text" name="clientId" required><br>
+            <label for="clientId">Client ID</label>
+            <select id="clientId" name="clientId" required>
+              <option value="">Loading client IDs...</option>
+            </select><br>
     
             <label>Creation Date:</label>
             <input type="date" name="creationDate" required><br>
@@ -118,6 +120,26 @@
     }
   });
   </script>
+<script>
+  window.addEventListener('DOMContentLoaded', async () => {
+    try {
+      const res = await fetch('/api/clients/list');
+      const data = await res.json();
+      const clientSelect = document.getElementById('clientId');
+
+      clientSelect.innerHTML = '<option value="">Select Client ID</option>';
+      data.clients.forEach(client => {
+        const option = document.createElement('option');
+        option.value = client.clientId;
+        option.textContent = client.clientId;
+        clientSelect.appendChild(option);
+      });
+    } catch (error) {
+      console.error('Failed to load client IDs:', error);
+    }
+  });
+</script>
+  
 
 
   

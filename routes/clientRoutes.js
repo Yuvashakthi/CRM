@@ -26,8 +26,7 @@ router.delete('/clients/:id', clientController.deleteClient);
 router.get('/clients/edit/:clientId', clientController.editClientForm);
 router.post('/clients/update/:clientId', upload.single('Profile'), clientController.updateClient);
 
-
-
+router.get('/list', clientController.getClientList);
 
 module.exports = router;
 

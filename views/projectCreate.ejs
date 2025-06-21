@@ -64,9 +64,11 @@
           <label>Project ID: <input type="text" name="projectId" required /></label>
           
           <label>Project Name: <input type="text" name="projectName" required /></label>
-          
-          <label>Client ID:
-            <input type="text" name="clientId" id="clientId" oninput="fetchClientDetails('id')" required />
+
+          <label for="clientId">Client ID:
+          <select id="clientId" name="clientId" required>
+            <option value="">Loading client IDs...</option>
+          </select>
           </label>
       
           <label>Client Name:
@@ -188,6 +190,26 @@
     }
 
   </script>
+ <script>
+  window.addEventListener('DOMContentLoaded', async () => {
+    try {
+      const res = await fetch('/api/clients/list');
+      const data = await res.json();
+      const clientSelect = document.getElementById('clientId');
+
+      clientSelect.innerHTML = '<option value="">Select Client ID</option>';
+      data.clients.forEach(client => {
+        const option = document.createElement('option');
+        option.value = client.clientId;
+        option.textContent = client.clientId;
+        clientSelect.appendChild(option);
+      });
+    } catch (error) {
+      console.error('Failed to load client IDs:', error);
+    }
+  });
+</script>
+  
   
 </body>
 </html>

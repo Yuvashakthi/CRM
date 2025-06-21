@@ -10,6 +10,7 @@ const { renderInvoiceView } = require('./controllers/invoiceController');
 const Project = require('./models/Project');
 const Client = require('./models/Client');
 const indexRoutes = require('./routes/index');
+const dashboardRoutes = require('./routes/dashboard');
 
 dotenv.config();
 
@@ -38,15 +39,16 @@ app.use("/api/projects", projectRoutes);
 app.use('/invoices', invoiceRoutes);
 app.use('/', projectRoutes);
 app.use(projectRoutes);
+app.use('/api/clients', clientRoutes);
+app.use('/dashboard', dashboardRoutes);
 
 
 app.get('/invoiceView', renderInvoiceView);
 
-// Redirect to dashboard if root is accessed
-app.get('/', (req, res) => {
-  res.redirect('/dashboard');
-})
 
+app.get('/dashboard', (req, res) => {
+  res.render('dashboard');
+});
 
 app.get('/invoice', (req, res) => {
   res.render('invoice'); // No leading slash, no .ejs
