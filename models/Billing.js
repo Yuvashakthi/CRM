@@ -7,8 +7,8 @@ const BillingSchema = new mongoose.Schema({
   paidAmount: { type: Number, required: true },
   status: {
     type: String,
-    enum: ['Paid', 'Unpaid'],
-    default: 'Paid'
+    enum: ['Billed', 'Unbilled'],
+    default: 'Billed'
   },
   fileUrl: { type: String } // path to uploaded file
 });

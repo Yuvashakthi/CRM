@@ -5,17 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CRM - Navi Promotions</title>
   <link rel="stylesheet" href="/styles.css" />
+ 
 </head>
 <body>
   <div class="container">
     <!-- Sidebar Navigation -->
-  <!-- Sidebar Navigation -->
     <aside class="sidebar">
       <h2>CRM</h2>
       <ul>
         <li><a href="/dashboard">Dashboard</a></li>
-        
-        <!-- Customers Dropdown -->
         <li>
           <a href="#" class="dropdown" onclick="toggleDropdown('customerDropdown')">Customers ▾</a>
           <ul id="customerDropdown" class="dropdown-menu">
@@ -23,8 +21,6 @@
             <li><a href="/customersCreate">Create Client</a></li>
           </ul>
         </li>
-
-        <!-- Projects Dropdown -->
         <li>
           <a href="#" class="dropdown" onclick="toggleDropdown('projectDropdown')">Projects ▾</a>
           <ul id="projectDropdown" class="dropdown-menu">
@@ -32,8 +28,6 @@
             <li><a href="/projectCreate">Project Create</a></li>
           </ul>
         </li>
-
-           <!-- Invoice Dropdown -->
         <li>
           <a href="#" class="dropdown" onclick="toggleDropdown('invoiceDropdown')">Invoices ▾</a>
           <ul id="invoiceDropdown" class="dropdown-menu">
@@ -41,8 +35,6 @@
             <li><a href="/invoice">Invoice Create</a></li>
           </ul>
         </li>
-        
-        <!-- Billing Dropdown -->
         <li>
           <a href="#" class="dropdown" onclick="toggleDropdown('billingDropdown')">Billings ▾</a>
           <ul id="billingDropdown" class="dropdown-menu">
@@ -50,14 +42,18 @@
             <li><a href="/billing">Create Billing</a></li>
           </ul>
         </li>
-         
       </ul>
     </aside>
-
 
     <!-- Dynamic Content -->
     <main class="content" id="content">
         <h1>Billing View</h1>
+
+        <div class="summary-box">
+          <div>Total Amount: ₹<span id="totalAmount">0.00</span></div>
+          <div>Paid Amount: ₹<span id="paidAmount">0.00</span></div>
+          <div>Balance Amount: ₹<span id="balanceAmount">0.00</span></div>
+        </div>
   
         <table class="custom-table">
           <thead>
@@ -72,13 +68,14 @@
           </thead>
           <tbody>
             <% billings.forEach(billing => { %>
-              <tr>
+              <tr class="billing-row" data-amount="<%= billing.paidAmount %>" data-status="<%= billing.status %>">
                 <td><%= billing.billingId %></td>
                 <td><%= billing.clientId %></td>
                 <td><%= new Date(billing.paidDate).toLocaleDateString() %></td>
                 <td>₹ <%= billing.paidAmount.toFixed(2) %></td>
                 <td><%= billing.status %></td>
                 <td>
+                  <button onclick="openBillingEditModal('<%= billing.billingId %>')">Edit</button>
                   <% if (billing.fileUrl) { %>
                     <a href="/billing/download/<%= billing.billingId %>" class="view-btn">Download</a>
                   <% } else { %>
@@ -89,9 +86,114 @@
             <% }) %>
           </tbody>
         </table>
+
+        <div id="editBillingModal" class="modal-edit" style="display: none;">
+          <div class="modal-content2">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h3>Edit Billing</h3>
+            <form id="editBillingForm" class="editform">
+              <label>Billing ID:
+                <input type="text" id="editBillingId" name="billingId" readonly />
+              </label>
+              <label>Client ID:
+                <input type="text" id="editClientId" name="clientId" readonly />
+              </label>
+              <label>Paid Date:
+                <input type="date" id="editPaidDate" name="paidDate" required />
+              </label>
+              <label>Paid Amount (INR):
+                <input type="number" id="editPaidAmount" name="paidAmount" required min="0" step="0.01" />
+              </label>
+              <label>Status:
+                <select id="editStatus" name="status" required>
+                  <option value="Billed">Billed</option>
+                  <option value="Unbilled">Unbilled</option>
+                </select>
+              </label>
+              <div class="modal-buttons">
+                <button type="submit-btn">Save</button>
+                <button type="button" onclick="closeModal()">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
       </main>
   </div>
 
   <script src="/script.js"></script>
+  <script>
+    async function openBillingEditModal(billingId) {
+      try {
+        const res = await fetch(`/billings/${billingId}`);
+        const billing = await res.json();
+  
+        if (!res.ok) {
+          alert(billing.error || "Failed to fetch billing details");
+          return;
+        }
+
+        document.getElementById("editBillingId").value = billing.billingId;
+        document.getElementById("editClientId").value = billing.clientId;
+        document.getElementById("editPaidDate").value = billing.paidDate.split("T")[0];
+        document.getElementById("editPaidAmount").value = billing.paidAmount;
+        document.getElementById("editStatus").value = billing.status;
+
+        document.getElementById("editBillingModal").style.display = "block";
+      } catch (err) {
+        alert("Error loading billing data: " + err.message);
+      }
+    }
+
+    function closeModal() {
+      document.getElementById("editBillingModal").style.display = "none";
+    }
+
+    document.getElementById("editBillingForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const billingId = document.getElementById("editBillingId").value;
+      const updatedData = {
+        paidDate: document.getElementById("editPaidDate").value,
+        paidAmount: document.getElementById("editPaidAmount").value,
+        status: document.getElementById("editStatus").value
+      };
+      try {
+        const res = await fetch(`/billings/${billingId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updatedData)
+        });
+        const result = await res.json();
+        if (res.ok) {
+          alert("Billing updated successfully!");
+          location.reload();
+        } else {
+          alert(result.error || "Failed to update billing");
+        }
+      } catch (err) {
+        alert("Error: " + err.message);
+      }
+    });
+
+    // Billing summary calculation
+    window.addEventListener("DOMContentLoaded", () => {
+      const rows = document.querySelectorAll(".billing-row");
+      let total = 0;
+      let paid = 0;
+      rows.forEach(row => {
+        const amount = parseFloat(row.dataset.amount);
+        const status = (row.dataset.status || '').toLowerCase();
+        if (!isNaN(amount)) {
+          total += amount;
+          if (status === "billed") {
+            paid += amount;
+          }
+        }
+      });
+      const balance = total - paid;
+      document.getElementById("totalAmount").textContent = total.toFixed(2);
+      document.getElementById("paidAmount").textContent = paid.toFixed(2);
+      document.getElementById("balanceAmount").textContent = balance.toFixed(2);
+    });
+  </script>
 </body>
 </html>

@@ -1203,7 +1203,11 @@ button[type="submit"] {
   color: #00488E;
 
 }
+.modal-content2 h3{
+  margin-bottom: 20px;
+  color: #00488E;
 
+}
 .modal-content1 {
   background-color: #fff;
   margin: auto;
@@ -1227,3 +1231,23 @@ button[type="submit"] {
   border-radius: 8px;
   font-weight: bold;
 }
+
+
+
+.modal-content2 {
+  background-color: #fff;
+  margin: auto;
+  margin-top:180px;
+  padding: 20px;
+  width:400px;
+  height:auto !important;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+ 
+}
+.editform{
+  display:block;
+  line-height: 40px;
+  margin-top:-20px;
+}
+
