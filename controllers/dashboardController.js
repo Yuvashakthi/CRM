@@ -4,17 +4,44 @@ const Billing = require('../models/Billing');
 
 exports.getDashboardStats = async (req, res) => {
   try {
+    // Clients
     const totalClients = await Client.countDocuments();
     const activeClients = await Client.countDocuments({ status: 'Active' });
     const inactiveClients = await Client.countDocuments({ status: 'Inactive' });
 
+    // Invoices
     const invoices = await Invoice.find();
-    const totalInvoiceAmount = invoices.reduce((sum, inv) => sum + (parseFloat(inv.dueAmount) || 0), 0);
-    const paidInvoices = invoices.filter(inv => inv.status === 'Paid').length;
-    const unpaidInvoices = invoices.filter(inv => inv.status === 'Unpaid').length;
+    let totalInvoiceAmount = 0;
+    let paidInvoiceAmount = 0;
+    let unpaidInvoiceAmount = 0;
 
+    invoices.forEach(inv => {
+      const amount = parseFloat(inv.dueAmount) || 0;
+      totalInvoiceAmount += amount;
+
+      if (inv.status === 'Paid' || inv.status === 'Partially Paid') {
+        paidInvoiceAmount += amount;
+      } else {
+        unpaidInvoiceAmount += amount;
+      }
+    });
+
+    // Billings
     const billings = await Billing.find();
-    const totalBillingAmount = billings.reduce((sum, bill) => sum + (parseFloat(bill.paidAmount) || 0), 0);
+    let totalBillingAmount = 0;
+    let paidBillingAmount = 0;
+
+    billings.forEach(bill => {
+      const amount = parseFloat(bill.paidAmount) || 0;
+      totalBillingAmount += amount;
+
+      if ((bill.status || '').toLowerCase() === 'billed') {
+        paidBillingAmount += amount;
+      }
+    });
+
+    // Unpaid = Total - Paid
+    const unpaidBillingAmount = totalBillingAmount - paidBillingAmount;
 
     res.json({
       clients: {
@@ -23,14 +50,14 @@ exports.getDashboardStats = async (req, res) => {
         inactive: inactiveClients
       },
       invoices: {
-        total: invoices.length,
         totalAmount: totalInvoiceAmount,
-        paidCount: paidInvoices,
-        unpaidCount: unpaidInvoices
+        paidAmount: paidInvoiceAmount,
+        unpaidAmount: unpaidInvoiceAmount
       },
       billings: {
-        total: billings.length,
-        totalPaid: totalBillingAmount
+        totalAmount: totalBillingAmount,
+        paidAmount: paidBillingAmount,
+        unpaidAmount: unpaidBillingAmount < 0 ? 0 : unpaidBillingAmount
       }
     });
   } catch (error) {

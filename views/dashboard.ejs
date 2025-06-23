@@ -14,32 +14,46 @@
       <h2>CRM</h2>
       <ul>
         <li><a href="/dashboard">Dashboard</a></li>
-        <li><a href="#" class="dropdown" onclick="toggleDropdown('customerDropdown')">Customers ▾</a>
+        
+        <!-- Customers Dropdown -->
+        <li>
+          <a href="#" class="dropdown" onclick="toggleDropdown('customerDropdown')">Customers ▾</a>
           <ul id="customerDropdown" class="dropdown-menu">
             <li><a href="/clients">Clients</a></li>
             <li><a href="/customersCreate">Create Client</a></li>
           </ul>
         </li>
-        <li><a href="#" class="dropdown" onclick="toggleDropdown('projectDropdown')">Projects ▾</a>
+
+        <!-- Projects Dropdown -->
+        <li>
+          <a href="#" class="dropdown" onclick="toggleDropdown('projectDropdown')">Projects ▾</a>
           <ul id="projectDropdown" class="dropdown-menu">
             <li><a href="/projectView">Project View</a></li>
             <li><a href="/projectCreate">Project Create</a></li>
           </ul>
         </li>
-        <li><a href="#" class="dropdown" onclick="toggleDropdown('invoiceDropdown')">Invoices ▾</a>
+
+          <!-- Invoice Dropdown -->
+        <li>
+          <a href="#" class="dropdown" onclick="toggleDropdown('invoiceDropdown')">Invoices ▾</a>
           <ul id="invoiceDropdown" class="dropdown-menu">
             <li><a href="/invoiceView">Invoice View</a></li>
             <li><a href="/invoice">Invoice Create</a></li>
           </ul>
         </li>
-        <li><a href="#" class="dropdown" onclick="toggleDropdown('billingDropdown')">Billings ▾</a>
-          <ul id="billingDropdown" class="dropdown-menu">
-            <li><a href="/billingView">View Billings</a></li>
-            <li><a href="/billing">Create Billing</a></li>
-          </ul>
-        </li>
+
+          <!-- Billing Dropdown -->
+          <li>
+            <a href="#" class="dropdown" onclick="toggleDropdown('billingDropdown')">Billings ▾</a>
+            <ul id="billingDropdown" class="dropdown-menu">
+              <li><a href="/billingView">View Billings</a></li>
+              <li><a href="/billing">Create Billing</a></li>
+            </ul>
+          </li>
+        
       </ul>
     </aside>
+
 
     <main class="content" id="content">
       <h1>Dashboard Overview</h1>
@@ -60,40 +74,59 @@
 
       <!-- Billing Summary Row -->
       <div class="card-row" id="billing-summary">
-        <div class="card"><h3>Total Billings</h3><span id="billingCount">--</span></div>
+        <div class="card"><h3>Total Billing Amount</h3><span id="billingTotalAmount">--</span></div> 
         <div class="card"><h3>Paid Amount</h3><span id="billingPaid">--</span></div>
         <div class="card"><h3>Unpaid Amount</h3><span id="billingUnpaid">--</span></div>
       </div>
     </main>
   </div>
 
- 
+
+  
   <script>
-    window.addEventListener("DOMContentLoaded", async () => {
-      try {
-        const res = await fetch('/dashboard/stats');
-        const data = await res.json();
-  
-        // Clients
-        document.getElementById('totalClients').textContent = data.clients.total;
-        document.getElementById('activeClients').textContent = data.clients.active;
-        document.getElementById('inactiveClients').textContent = data.clients.inactive;
-  
-        // Invoices
-        document.getElementById('invoiceTotal').textContent = `₹${data.invoices.totalAmount.toFixed(2)}`;
-        document.getElementById('invoicePaid').textContent = data.invoices.paidCount;
-        document.getElementById('invoiceUnpaid').textContent = data.invoices.unpaidCount;
-  
-        // Billings
-        document.getElementById('billingCount').textContent = data.billings.total;
-        document.getElementById('billingPaid').textContent = `₹${data.billings.totalPaid.toFixed(2)}`;
-        const unpaid = (data.invoices.totalAmount - data.billings.totalPaid).toFixed(2);
-        document.getElementById('billingUnpaid').textContent = `₹${unpaid}`;
-      } catch (err) {
-        console.error("Failed to load dashboard stats", err);
+      function toggleDropdown(id) {
+        var dropdown = document.getElementById(id);
+        dropdown.classList.toggle("show");
       }
-    });
+
+      // Close dropdown when clicking outside
+      window.onclick = function(event) {
+        if (!event.target.matches('.dropdown')) {
+          let dropdowns = document.querySelectorAll('.dropdown-menu');
+          dropdowns.forEach(menu => menu.classList.remove('show'));
+        }
+      };
+
   </script>
+
+<script>
+  window.addEventListener("DOMContentLoaded", async () => {
+    try {
+      const res = await fetch('/dashboard/stats');
+      const data = await res.json();
+
+      // Clients
+      document.getElementById('totalClients').textContent = data.clients.total;
+      document.getElementById('activeClients').textContent = data.clients.active;
+      document.getElementById('inactiveClients').textContent = data.clients.inactive;
+
+      // Invoices
+      document.getElementById('invoiceTotal').textContent = `₹${data.invoices.totalAmount.toFixed(2)}`;
+      document.getElementById('invoicePaid').textContent = `₹${data.invoices.paidAmount.toFixed(2)}`;
+      document.getElementById('invoiceUnpaid').textContent = `₹${data.invoices.unpaidAmount.toFixed(2)}`;
+
+      // Billings
+      document.getElementById('billingTotalAmount').textContent = `₹${data.billings.totalAmount.toFixed(2)}`;
+      document.getElementById('billingPaid').textContent = `₹${data.billings.paidAmount.toFixed(2)}`;
+      document.getElementById('billingUnpaid').textContent = `₹${data.billings.unpaidAmount.toFixed(2)}`;
+
+    } catch (err) {
+      console.error("Failed to load dashboard stats", err);
+    }
+  });
+</script>
+
+
   
   
 </body>

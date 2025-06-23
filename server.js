@@ -45,6 +45,9 @@ app.use('/dashboard', dashboardRoutes);
 
 app.get('/invoiceView', renderInvoiceView);
 
+app.get('/', (req, res) => {
+  res.render('dashboard');
+});
 
 app.get('/dashboard', (req, res) => {
   res.render('dashboard');
@@ -63,4 +66,4 @@ app.get('/billing', (req, res) => {
 app.listen(3000, () => {
   console.log('Server running on http://localhost:3000');
 });
-
+  
