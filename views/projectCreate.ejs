@@ -65,11 +65,10 @@
           
           <label>Project Name: <input type="text" name="projectName" required /></label>
 
-          <label for="clientId">Client ID:
-          <select id="clientId" name="clientId" required>
-            <option value="">Loading client IDs...</option>
-          </select>
+          <label>Client ID:
+            <input type="text" name="clientId" id="clientId" oninput="fetchClientDetails('id')" required />
           </label>
+      
       
           <label>Client Name:
             <input type="text" name="clientName" id="clientName" oninput="fetchClientDetails('name')" required />
