@@ -61,7 +61,10 @@
       <h1 class="form-wrapper" style="color:#00488E;">Create Project</h1>
       <div class="form-wrapper">
         <form action="/api/projects" method="POST" class="project-form">
-          <label>Project ID: <input type="text" name="projectId" required /></label>
+          <label>Project ID:
+            <input type="text" name="projectId" id="projectId" readonly required />
+
+          </label>
           
           <label>Project Name: <input type="text" name="projectName" required /></label>
 
@@ -208,6 +211,47 @@
     }
   });
 </script>
+<script>
+  async function submitProject(event) {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const data = Object.fromEntries(formData.entries());
+
+    try {
+      const response = await fetch('/api/projects', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert('Project created successfully!');
+        event.target.reset(); // ✅ Clear all fields
+
+        // ✅ Immediately fetch new Project ID
+        const idRes = await fetch('/api/projects/next-id');
+        const idData = await idRes.json();
+        if (idData.nextProjectId) {
+          document.getElementById('projectId').value = idData.nextProjectId;
+        }
+      } else {
+        alert(result.error || 'Failed to create project. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error submitting project. Please try again.');
+    }
+  }
+
+  document.querySelector('form').addEventListener('submit', submitProject);
+</script>
+
+
+
   
   
 </body>

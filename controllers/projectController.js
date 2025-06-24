@@ -1,52 +1,67 @@
 const mongoose = require("mongoose");
 const Project = require("../models/Project");
 const Client = require("../models/Client");
-
 exports.createProject = async (req, res) => {
   try {
-    console.log("Received project creation request:", req.body);
-
-    const { clientId, clientName, department, projectName, projectId, projectType, assignedTo, startDate, endDate, status, cost } = req.body;
+    const {
+      clientId, clientName, department, projectName,
+      projectType, assignedTo, startDate, endDate, status, cost
+    } = req.body;
 
     if (!clientId) {
-      console.error("Client ID missing in request");
       return res.status(400).json({ error: "Client ID is required." });
     }
 
-    // Ensure that clientId is passed as a string and not as ObjectId
-    const client = await Client.findOne({ clientId: clientId }); // Validate clientId as a string
+    // Validate client
+    const client = await Client.findOne({ clientId });
     if (!client) {
-      console.error(`Client ID ${clientId} not found`);
-      return res.status(404).json({ error: "Client not found. Please check the Client ID." });
+      return res.status(404).json({ error: "Client not found" });
     }
 
+    // ✅ Generate unique projectId (server-side only)
+    const now = new Date();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const prefix = `PRO-${month}-`;
+
+    // Find the last used project ID
+    const lastProject = await Project.findOne({ projectId: { $regex: `^${prefix}` } })
+      .sort({ projectId: -1 });
+
+    let nextNumber = 1;
+    if (lastProject && lastProject.projectId) {
+      const lastNum = parseInt(lastProject.projectId.split('-')[2]);
+      if (!isNaN(lastNum)) {
+        nextNumber = lastNum + 1;
+      }
+    }
+
+    const projectId = `${prefix}${String(nextNumber).padStart(3, '0')}`;
+
+    // Save the new project
     const newProject = new Project({
+      projectId, // now generated on the server
       clientId,
       clientName,
       department,
       projectName,
-      projectId,
       projectType,
       assignedTo,
       startDate,
       endDate,
       status,
-      cost,
+      cost
     });
 
     await newProject.save();
 
-    console.log("Project created successfully:", newProject);
-    res.status(201).json({
-      message: "Project created successfully!",
-      project: newProject
-    });
+    res.status(201).json({ message: "Project created successfully!", project: newProject });
 
   } catch (error) {
     console.error("Error creating project:", error);
     res.status(500).json({ error: error.message });
   }
 };
+
 
 exports.getProjectById = async (req, res) => {
   try {
@@ -138,6 +153,33 @@ exports.updateProject = async (req, res) => {
     res.status(200).json({ message: 'Project updated successfully', project: updated });
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
+  }
+};
+
+exports.getNextProjectId = async (req, res) => {
+  try {
+    const now = new Date();
+    const month = String(now.getMonth() + 1).padStart(2, '0'); // Current month
+    const prefix = `PRO-${month}-`;
+
+    // ✅ Find latest project in this month
+    const lastProject = await Project.findOne({ projectId: { $regex: `^${prefix}` } })
+      .sort({ projectId: -1 }); // sort by ID, not createdAt
+
+    let nextNumber = 1;
+    if (lastProject && lastProject.projectId) {
+      const lastIdPart = lastProject.projectId.split('-')[2]; // get the XXX
+      const lastNumber = parseInt(lastIdPart);
+      if (!isNaN(lastNumber)) {
+        nextNumber = lastNumber + 1;
+      }
+    }
+
+    const nextProjectId = `${prefix}${String(nextNumber).padStart(3, '0')}`;
+    res.json({ nextProjectId });
+  } catch (error) {
+    console.error("Error generating project ID:", error);
+    res.status(500).json({ error: "Failed to generate project ID" });
   }
 };
 

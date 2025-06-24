@@ -5,13 +5,15 @@ const router = express.Router();
 
 
 
-// Route for creating a project
+// Correct order matters!
+
+
 router.post('/api/projects', projectController.createProject);
 router.get("/projectView", projectController.renderAllProjects);
 router.get("/client/:clientId", projectController.getProjectsByClientId);
-router.get("/api/projects/:projectId", projectController.getProjectById);
+router.get('/api/projects/next-id', projectController.getNextProjectId); // ✅ PLACE THIS FIRST
+router.get("/api/projects/:projectId", projectController.getProjectById); // This must come after next-id
 
-// 👉 Add this for fetching client by name or ID
 router.get('/api/clients/fetch', projectController.fetchClient);
 router.post('/projects/update/:projectId', projectController.updateProject);
 router.get('/clients/:clientId', clientController.getClientById);

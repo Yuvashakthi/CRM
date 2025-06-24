@@ -5,13 +5,15 @@ const projectSchema = new mongoose.Schema({
   projectId: { type: String, required: true, unique: true },
   projectType: { type: String, required: true },
   assignedTo: { type: String },
-  department: { type: String }, // ➕ Add department
+  department: { type: String },
   startDate: { type: Date },
   endDate: { type: Date },
   status: { type: String },
   cost: { type: Number },
   clientId: { type: String, required: true },
-  clientName: { type: String }, // ➕ Add client name for reference
+  clientName: { type: String }
+}, {
+  timestamps: true // ✅ Add this line to enable createdAt & updatedAt
 });
 
 const Project = mongoose.model("Project", projectSchema);
