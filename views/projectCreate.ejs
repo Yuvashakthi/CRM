@@ -212,42 +212,20 @@
   });
 </script>
 <script>
-  async function submitProject(event) {
-    event.preventDefault();
-    const formData = new FormData(event.target);
-    const data = Object.fromEntries(formData.entries());
-
+  async function fetchNextProjectId() {
     try {
-      const response = await fetch('/api/projects', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-
-      const result = await response.json();
-
-      if (response.ok) {
-        alert('Project created successfully!');
-        event.target.reset(); // ✅ Clear all fields
-
-        // ✅ Immediately fetch new Project ID
-        const idRes = await fetch('/api/projects/next-id');
-        const idData = await idRes.json();
-        if (idData.nextProjectId) {
-          document.getElementById('projectId').value = idData.nextProjectId;
-        }
-      } else {
-        alert(result.error || 'Failed to create project. Please try again.');
+      const response = await fetch('/api/projects/next-id');
+      const data = await response.json();
+      if (data.nextProjectId) {
+        document.getElementById('projectId').value = data.nextProjectId;
       }
     } catch (error) {
-      console.error('Error:', error);
-      alert('Error submitting project. Please try again.');
+      console.error('Error fetching next project ID:', error);
     }
   }
 
-  document.querySelector('form').addEventListener('submit', submitProject);
+  // ✅ Call it when page loads
+  window.addEventListener('DOMContentLoaded', fetchNextProjectId);
 </script>
 
 

@@ -145,3 +145,26 @@ exports.updateInvoice = async (req, res) => {
   }
 };
 
+exports.getNextInvoiceId = async (req, res) => {
+  try {
+    const now   = new Date();
+    const month = String(now.getMonth() + 1).padStart(2, "0");   // 01-12
+    const prefix = `INV-${month}-`;                              // e.g. INV-06-
+
+    // Find the last invoice *this month* (highest serial)
+    const last = await Invoice.findOne({ invoiceId: { $regex: `^${prefix}` } })
+                              .sort({ invoiceId: -1 });          // DESC by ID
+
+    let nextNum = 1;
+    if (last && last.invoiceId) {
+      const lastSerial = parseInt(last.invoiceId.split("-")[2], 10); // "007" ➜ 7
+      if (!isNaN(lastSerial)) nextNum = lastSerial + 1;
+    }
+
+    const nextInvoiceId = `${prefix}${String(nextNum).padStart(3, "0")}`; // INV-06-008
+    res.json({ nextInvoiceId });
+  } catch (err) {
+    console.error("Error generating invoice ID:", err);
+    res.status(500).json({ error: "Failed to generate invoice ID" });
+  }
+};

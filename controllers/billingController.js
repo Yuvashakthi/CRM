@@ -135,3 +135,27 @@ exports.updateBilling = async (req, res) => {
   }
 };
 
+// === Auto-ID generator =================================================
+exports.getNextBillingId = async (req, res) => {
+  try {
+    const now    = new Date();
+    const month  = String(now.getMonth() + 1).padStart(2, '0'); // 01-12
+    const prefix = `BIL-${month}-`;                             // e.g. BIL-06-
+
+    // Find last billing this month
+    const last = await Billing.findOne({ billingId: { $regex: `^${prefix}` } })
+                              .sort({ billingId: -1 });         // DESC
+
+    let nextNum = 1;
+    if (last && last.billingId) {
+      const lastSerial = parseInt(last.billingId.split('-')[2], 10);
+      if (!isNaN(lastSerial)) nextNum = lastSerial + 1;
+    }
+
+    const nextBillingId = `${prefix}${String(nextNum).padStart(3, '0')}`;
+    res.json({ nextBillingId });
+  } catch (err) {
+    console.error('Error generating billing ID:', err);
+    res.status(500).json({ error: 'Failed to generate billing ID' });
+  }
+};

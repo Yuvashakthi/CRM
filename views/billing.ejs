@@ -59,7 +59,8 @@
         <form id="billingForm" action="/create" method="POST" enctype="multipart/form-data" class="invoice-form">
 
           <label>Billing ID:</label>
-          <input type="text" name="billingId" required><br>
+          <input type="text" name="billingId" id="billingId" readonly required><br>
+
   
           <label for="clientId">Client ID: </label>
           <select id="clientId" name="clientId" required>
@@ -133,6 +134,45 @@
     }
   });
 </script>
+
+<script>
+  /* 1. Grab next ID ----------------------------------------------- */
+  async function loadNextBillingId() {
+    try {
+      const res = await fetch('/billing/next-id');   // adjust path if needed
+      const { nextBillingId } = await res.json();
+      document.getElementById('billingId').value = nextBillingId || '';
+    } catch (err) {
+      console.error('Could not fetch next billing ID:', err);
+    }
+  }
+
+  /* 2. Submit handler --------------------------------------------- */
+  document.getElementById('billingForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const form = e.target;
+    const data = new FormData(form);
+
+    try {
+      const res  = await fetch('/billing/create', { method: 'POST', body: data });
+      const json = await res.json();
+
+      if (!res.ok) throw new Error(json.error || 'Unknown error');
+      alert(`Billing ${json.billing.billingId} created!`);
+      form.reset();
+      await loadNextBillingId();                       // 🔁 show new ID
+    } catch (err) {
+      alert('Failed: ' + err.message);
+    }
+  });
+
+  /* 3. Kick off when page is ready -------------------------------- */
+  window.addEventListener('DOMContentLoaded', async () => {
+    await loadNextBillingId();                         // <<<
+    // ↳ leave your existing “load client IDs” code here
+  });
+</script>
+
   
 </body>
 </html>

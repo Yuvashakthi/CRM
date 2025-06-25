@@ -60,7 +60,8 @@
       <div class="form-wrapper">
         <form id="invoiceForm" action="/create" method="POST" enctype="multipart/form-data" class="invoice-form">
             <label>Invoice ID:</label>
-            <input type="text" name="invoiceId" required><br>
+            <input type="text" name="invoiceId" id="invoiceId" readonly required><br>
+            
 
             <label for="clientId">Client ID</label>
             <select id="clientId" name="clientId" required>
@@ -139,6 +140,45 @@
     }
   });
 </script>
+
+<script>
+
+  async function loadNextInvoiceId() {
+    try {
+      const res  = await fetch('/invoices/next-id');
+      const { nextInvoiceId } = await res.json();
+      document.getElementById('invoiceId').value = nextInvoiceId || '';
+    } catch (err) {
+      console.error('Could not fetch next invoice ID:', err);
+    }
+  }
+
+
+  document.getElementById('invoiceForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const form  = e.target;
+    const data  = new FormData(form);
+
+    try {
+      const res  = await fetch('/invoices/create', { method: 'POST', body: data });
+      const json = await res.json();
+
+      if (!res.ok) throw new Error(json.error || 'Unknown error');
+      alert(`Invoice ${json.invoice.invoiceId} created!`);
+      form.reset();                      
+      await loadNextInvoiceId();          
+    } catch (err) {
+      alert('Failed: ' + err.message);
+    }
+  });
+
+
+  window.addEventListener('DOMContentLoaded', async () => {
+    await loadNextInvoiceId();            
+   
+  });
+</script>
+
   
 
 
