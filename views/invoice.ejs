@@ -1,21 +1,19 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CRM - Navi Promotions</title>
   <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
   <div class="container">
-    <!-- Sidebar Navigation -->
+    <!-- ── Sidebar ──────────────────────────────────────────────── -->
     <aside class="sidebar">
       <h2>CRM</h2>
       <ul>
         <li><a href="/dashboard">Dashboard</a></li>
-        
-        <!-- Customers Dropdown -->
+
         <li>
           <a href="#" class="dropdown" onclick="toggleDropdown('customerDropdown')">Customers ▾</a>
           <ul id="customerDropdown" class="dropdown-menu">
@@ -24,7 +22,6 @@
           </ul>
         </li>
 
-        <!-- Projects Dropdown -->
         <li>
           <a href="#" class="dropdown" onclick="toggleDropdown('projectDropdown')">Projects ▾</a>
           <ul id="projectDropdown" class="dropdown-menu">
@@ -33,7 +30,6 @@
           </ul>
         </li>
 
-           <!-- Invoice Dropdown -->
         <li>
           <a href="#" class="dropdown" onclick="toggleDropdown('invoiceDropdown')">Invoices ▾</a>
           <ul id="invoiceDropdown" class="dropdown-menu">
@@ -42,146 +38,112 @@
           </ul>
         </li>
 
-          <!-- Billing Dropdown -->
-          <li>
-            <a href="#" class="dropdown" onclick="toggleDropdown('billingDropdown')">Billings ▾</a>
-            <ul id="billingDropdown" class="dropdown-menu">
-              <li><a href="/billingView">View Billings</a></li>
-              <li><a href="/billing">Create Billing</a></li>
-            </ul>
-          </li>
-         
+        <li>
+          <a href="#" class="dropdown" onclick="toggleDropdown('billingDropdown')">Billings ▾</a>
+          <ul id="billingDropdown" class="dropdown-menu">
+            <li><a href="/billingView">View Billings</a></li>
+            <li><a href="/billing">Create Billing</a></li>
+          </ul>
+        </li>
       </ul>
     </aside>
 
-    <!-- Main Content -->
-    <main class="content" id="content">
+    <!-- ── Main Content ──────────────────────────────────────────── -->
+    <main class="content">
       <h1>Create Invoice</h1>
-      <div class="form-wrapper">
-        <form id="invoiceForm" action="/create" method="POST" enctype="multipart/form-data" class="invoice-form">
-            <label>Invoice ID:</label>
-            <input type="text" name="invoiceId" id="invoiceId" readonly required><br>
-            
 
-            <label for="clientId">Client ID</label>
-            <select id="clientId" name="clientId" required>
-              <option value="">Loading client IDs...</option>
-            </select><br>
-    
-            <label>Creation Date:</label>
-            <input type="date" name="creationDate" required><br>
-    
-            <label>Due Date:</label>
-            <input type="date" name="dueDate" required><br>
-    
-            <label>Status:</label>
-            <select type="dropdown" name="status" required>
-                <option value="Pending">Pending</option>
-                <option value="Paid">Paid</option>
-                <option value="Partially Paid">Partially Paid</option>
-            </select><br>
-    
-            <label>Due Amount:</label>
-            <input type="number" name="dueAmount" required><br>
-    
-            <label>Upload File:</label>
-            <input type="file" name="invoiceFile"><br><br>
-    
-            <button type="submit">Create Invoice</button>
+      <div class="form-wrapper">
+        <form id="invoiceForm" enctype="multipart/form-data" class="invoice-form">
+          <label for="invoiceId">Invoice ID:</label>
+          <input type="text" id="invoiceId" name="invoiceId" readonly required /><br>
+
+          <label for="clientId">Client ID:</label>
+          <select id="clientId" name="clientId" required>
+            <option value="">Loading client IDs…</option>
+          </select><br>
+
+          <label for="creationDate">Creation Date:</label>
+          <input type="date" id="creationDate" name="creationDate" required /><br>
+
+          <label for="dueDate">Due Date:</label>
+          <input type="date" id="dueDate" name="dueDate" required /><br>
+
+          <label for="status">Status:</label>
+          <select id="status" name="status" required>
+            <option value="Pending">Pending</option>
+            <option value="Paid">Paid</option>
+            <option value="Partially Paid">Partially Paid</option>
+          </select><br>
+
+          <label for="dueAmount">Due Amount:</label>
+          <input type="number" id="dueAmount" name="dueAmount" required /><br>
+
+          <label for="invoiceFile">Upload File:</label>
+          <input type="file" id="invoiceFile" name="invoiceFile" /><br><br>
+
+          <button type="submit">Create Invoice</button>
         </form>
       </div>
-    
-      
     </main>
   </div>
 
   <script src="/script.js"></script>
+
   <script>
-  document.getElementById('invoiceForm').addEventListener('submit', async function (e) {
-    e.preventDefault(); // prevent default form submission
+    /* ── 1. Populate client dropdown ───────────────────────────── */
+    async function loadClientIds() {
+      try {
+        const res   = await fetch('/api/clients/list');
+        const { clients } = await res.json();
+        const sel   = document.getElementById('clientId');
 
-    const formData = new FormData(this);
-
-    try {
-      const res = await fetch('/invoices/create', {
-        method: 'POST',
-        body: formData
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        alert('Invoice created successfully!');
-        location.reload(); // Refreshes the page
-      } else {
-        alert(data.error || 'Failed to create invoice');
+        sel.innerHTML = '<option value="">Select Client ID</option>';
+        clients.forEach(c => {
+          sel.insertAdjacentHTML('beforeend',
+            `<option value="${c.clientId}">${c.clientId}</option>`);
+        });
+      } catch (err) {
+        console.error('Could not load client IDs:', err);
       }
-    } catch (err) {
-      alert('Error: ' + err.message);
     }
-  });
+
+    /* ── 2. Get next invoice ID ───────────────────────────────── */
+    async function loadNextInvoiceId() {
+      try {
+        const res   = await fetch('/invoices/next-id');
+        const { nextInvoiceId } = await res.json();
+        document.getElementById('invoiceId').value = nextInvoiceId || '';
+      } catch (err) {
+        console.error('Could not fetch next invoice ID:', err);
+      }
+    }
+
+    /* ── 3. Submit handler ────────────────────────────────────── */
+    document.getElementById('invoiceForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+
+      try {
+        const res  = await fetch('/invoices/create', {
+          method: 'POST',
+          body: formData
+        });
+        const json = await res.json();
+
+        if (!res.ok) throw new Error(json.error || 'Unknown error');
+        alert(`Invoice ${json.invoice.invoiceId} created!`);
+        e.target.reset();
+        await loadNextInvoiceId();  // refresh field to the next number
+      } catch (err) {
+        alert('Failed: ' + err.message);
+      }
+    });
+
+    /* ── 4. Kick off once DOM ready ───────────────────────────── */
+    window.addEventListener('DOMContentLoaded', async () => {
+      await loadClientIds();
+      await loadNextInvoiceId();
+    });
   </script>
-<script>
-  window.addEventListener('DOMContentLoaded', async () => {
-    try {
-      const res = await fetch('/api/clients/list');
-      const data = await res.json();
-      const clientSelect = document.getElementById('clientId');
-
-      clientSelect.innerHTML = '<option value="">Select Client ID</option>';
-      data.clients.forEach(client => {
-        const option = document.createElement('option');
-        option.value = client.clientId;
-        option.textContent = client.clientId;
-        clientSelect.appendChild(option);
-      });
-    } catch (error) {
-      console.error('Failed to load client IDs:', error);
-    }
-  });
-</script>
-
-<script>
-
-  async function loadNextInvoiceId() {
-    try {
-      const res  = await fetch('/invoices/next-id');
-      const { nextInvoiceId } = await res.json();
-      document.getElementById('invoiceId').value = nextInvoiceId || '';
-    } catch (err) {
-      console.error('Could not fetch next invoice ID:', err);
-    }
-  }
-
-
-  document.getElementById('invoiceForm').addEventListener('submit', async e => {
-    e.preventDefault();
-    const form  = e.target;
-    const data  = new FormData(form);
-
-    try {
-      const res  = await fetch('/invoices/create', { method: 'POST', body: data });
-      const json = await res.json();
-
-      if (!res.ok) throw new Error(json.error || 'Unknown error');
-      alert(`Invoice ${json.invoice.invoiceId} created!`);
-      form.reset();                      
-      await loadNextInvoiceId();          
-    } catch (err) {
-      alert('Failed: ' + err.message);
-    }
-  });
-
-
-  window.addEventListener('DOMContentLoaded', async () => {
-    await loadNextInvoiceId();            
-   
-  });
-</script>
-
-  
-
-
-  
 </body>
-</html> 
+</html>

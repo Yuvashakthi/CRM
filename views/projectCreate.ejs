@@ -8,14 +8,11 @@
 </head>
 <body>
   <div class="container">
-    <!-- Sidebar Navigation -->
-   <!-- Sidebar Navigation -->
+    <!-- ── Sidebar (unchanged) ─────────────────────────────────── -->
     <aside class="sidebar">
       <h2>CRM</h2>
       <ul>
         <li><a href="/dashboard">Dashboard</a></li>
-        
-        <!-- Customers Dropdown -->
         <li>
           <a href="#" class="dropdown" onclick="toggleDropdown('customerDropdown')">Customers ▾</a>
           <ul id="customerDropdown" class="dropdown-menu">
@@ -23,8 +20,6 @@
             <li><a href="/customersCreate">Create Client</a></li>
           </ul>
         </li>
-
-        <!-- Projects Dropdown -->
         <li>
           <a href="#" class="dropdown" onclick="toggleDropdown('projectDropdown')">Projects ▾</a>
           <ul id="projectDropdown" class="dropdown-menu">
@@ -32,8 +27,6 @@
             <li><a href="/projectCreate">Project Create</a></li>
           </ul>
         </li>
-
-           <!-- Invoice Dropdown -->
         <li>
           <a href="#" class="dropdown" onclick="toggleDropdown('invoiceDropdown')">Invoices ▾</a>
           <ul id="invoiceDropdown" class="dropdown-menu">
@@ -41,197 +34,176 @@
             <li><a href="/invoice">Invoice Create</a></li>
           </ul>
         </li>
-
-         <!-- Billing Dropdown -->
-
-          <!-- Billing Dropdown -->
-          <li>
-            <a href="#" class="dropdown" onclick="toggleDropdown('billingDropdown')">Billings ▾</a>
-            <ul id="billingDropdown" class="dropdown-menu">
-              <li><a href="/billingView">View Billings</a></li>
-              <li><a href="/billing">Create Billing</a></li>
-            </ul>
-          </li>
-         
+        <li>
+          <a href="#" class="dropdown" onclick="toggleDropdown('billingDropdown')">Billings ▾</a>
+          <ul id="billingDropdown" class="dropdown-menu">
+            <li><a href="/billingView">View Billings</a></li>
+            <li><a href="/billing">Create Billing</a></li>
+          </ul>
+        </li>
       </ul>
     </aside>
 
+    <!-- ── Main Content ────────────────────────────────────────── -->
+    <main class="content">
+      <h1 style="color:#00488E;">Create Project</h1>
 
-    <main class="content" id="content">
-      <h1 class="form-wrapper" style="color:#00488E;">Create Project</h1>
       <div class="form-wrapper">
-        <form action="/api/projects" method="POST" class="project-form">
-          <label>Project ID:
-            <input type="text" name="projectId" id="projectId" readonly required />
-
-          </label>
-          
-          <label>Project Name: <input type="text" name="projectName" required /></label>
-
-          <label>Client ID:
-            <input type="text" name="clientId" id="clientId" oninput="fetchClientDetails('id')" required />
-          </label>
-      
-      
-          <label>Client Name:
-            <input type="text" name="clientName" id="clientName" oninput="fetchClientDetails('name')" required />
-          </label>
-      
-          <label>Department:
-            <select name="department" id="department" onchange="updateAssignedTo()" required>
-              <option value="">Select</option>
-              <option value="Development">Development</option>
-              <option value="Graphic Designing">Graphic Designing</option>
-            </select>
-          </label>
-      
-          <label>Assigned To:
-            <select name="assignedTo" id="assignedTo" required>
-              <option value="">Select</option>
-            </select>
-          </label>
-      
-          <label>Project Type: <input type="text" name="projectType" /></label>
-          <label>Start Date: <input type="date" name="startDate" /></label>
-          <label>End Date: <input type="date" name="endDate" /></label>
-          <label>Status: <input type="text" name="status" /></label>
-          <label>Worth (in INR): <input type="text" name="worth" /></label>
-          <button type="submit">Create Project</button>
-        </form>
+        <div class="form-wrapper">
+          <form id="projectForm" class="project-form">
+            <label>Project ID:
+              <input type="text" id="projectId" name="projectId" readonly required />
+            </label>
+        
+            <label>Project Name:
+              <input type="text" id="projectName" name="projectName" required />
+            </label>
+        
+            <label>Client ID:
+              <input type="text" id="clientId" name="clientId" oninput="fetchClientDetails('id')" required />
+            </label>
+        
+            <label>Client Name:
+              <input type="text" id="clientName" name="clientName" oninput="fetchClientDetails('name')" required />
+            </label>
+        
+            <label>Department:
+              <select id="department" name="department" onchange="updateAssignedTo()" required>
+                <option value="">Select</option>
+                <option value="Development">Development</option>
+                <option value="Graphic Designing">Graphic Designing</option>
+              </select>
+            </label>
+        
+            <label>Assigned To:
+              <select id="assignedTo" name="assignedTo" required>
+                <option value="">Select</option>
+              </select>
+            </label>
+        
+            <label>Project Type:
+              <input type="text" id="projectType" name="projectType" />
+            </label>
+        
+            <label>Start Date:
+              <input type="date" id="startDate" name="startDate" />
+            </label>
+        
+            <label>End Date:
+              <input type="date" id="endDate" name="endDate" />
+            </label>
+        
+            <label>Status:
+              <input type="text" id="status" name="status" />
+            </label>
+        
+            <label>Worth (INR):
+              <input type="text" id="worth" name="worth" />
+            </label>
+        
+            <button type="submit">Create Project</button>
+          </form>
+        </div>
+        
       </div>
-     
-      
     </main>
-    
   </div>
 
   <script src="/script.js"></script>
+
   <script>
-    async function submitProject(event) {
-      event.preventDefault();
-      const formData = new FormData(event.target);
-  
-      const data = Object.fromEntries(formData.entries());
-  
-      try {
-        const response = await fetch('/api/projects', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
-        });
-  
-        const result = await response.json();
-  
-        if (response.ok) {
-          alert('Project created successfully!');
-          event.target.reset(); // Reset the form fields without redirection
-        } else {
-          alert(result.error || 'Failed to create project. Please try again.');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        alert('Error submitting project. Please try again.');
-      }
-    }
-  
-    // Attach event listener to form
-    document.querySelector('form').addEventListener('submit', submitProject);
-
-
+    /* ── 1. Helpers ────────────────────────────────────────────── */
     const staffByDepartment = {
-      "Development": ["Manjubashini", "Yuvashakthi", "Jacinth Sharon"],
+      "Development":       ["Manjubashini", "Yuvashakthi", "Jacinth Sharon"],
       "Graphic Designing": ["Sathees Kumar", "Manoj Kumar"]
     };
 
     function updateAssignedTo() {
-      const dept = document.getElementById('department').value;
-      const assignedToSelect = document.getElementById('assignedTo');
-      assignedToSelect.innerHTML = '<option value="">Select</option>';
-
-      if (staffByDepartment[dept]) {
-        staffByDepartment[dept].forEach(person => {
-          const option = document.createElement('option');
-          option.value = person;
-          option.textContent = person;
-          assignedToSelect.appendChild(option);
-        });
-      }
+      const deptSel   = document.getElementById('department').value;
+      const assigned  = document.getElementById('assignedTo');
+      assigned.innerHTML = '<option value="">Select</option>';
+      (staffByDepartment[deptSel] || []).forEach(p => {
+        assigned.insertAdjacentHTML('beforeend', `<option value="${p}">${p}</option>`);
+      });
     }
 
     async function fetchClientDetails(type) {
-      const clientIdInput = document.getElementById('clientId');
-      const clientNameInput = document.getElementById('clientName');
-      let query = '';
-
-      if (type === 'id' && clientIdInput.value.trim()) {
-        query = `id=${clientIdInput.value.trim()}`;
-      } else if (type === 'name' && clientNameInput.value.trim()) {
-        query = `name=${clientNameInput.value.trim()}`;
-      } else {
-        return;
-      }
+      const idInput   = document.getElementById('clientId');
+      const nameInput = document.getElementById('clientName');
+      const query     = type === 'id'   && idInput.value.trim()
+                      ? `id=${idInput.value.trim()}`
+                      : type === 'name' && nameInput.value.trim()
+                      ? `name=${nameInput.value.trim()}`
+                      : '';
+      if (!query) return;
 
       try {
-        const response = await fetch(`/api/clients/fetch?${query}`);
-        const data = await response.json();
-
-        if (data && data.client) {
-          if (type === 'id') {
-            clientNameInput.value = data.client.name || '';
-          } else {
-            clientIdInput.value = data.client.clientId || '';
-          }
-        } else {
-          console.warn("Client not found");
+        const res  = await fetch(`/api/clients/fetch?${query}`);
+        const { client } = await res.json();
+        if (client) {
+          idInput.value   = client.clientId ?? idInput.value;
+          nameInput.value = client.name     ?? nameInput.value;
         }
       } catch (err) {
-        console.error("Error fetching client:", err);
+        console.error('Error fetching client:', err);
       }
     }
 
+    /* ── 2. Auto-ID fetcher ────────────────────────────────────── */
+    async function loadNextProjectId() {
+      try {
+        const res  = await fetch('/api/projects/next-id');
+        const { nextProjectId } = await res.json();
+        document.getElementById('projectId').value = nextProjectId || '';
+      } catch (err) {
+        console.error('Could not fetch next project ID:', err);
+      }
+    }
+
+    /* ── 3. Populate Client-ID dropdown (optional) ─────────────── */
+    async function loadClientIds() {
+      try {
+        const res     = await fetch('/api/clients/list');
+        const { clients } = await res.json();
+        const select  = document.getElementById('clientId');
+        select.insertAdjacentHTML('afterbegin', '<option value="">Select Client ID</option>');
+        clients.forEach(c => {
+          select.insertAdjacentHTML('beforeend',
+            `<option value="${c.clientId}">${c.clientId}</option>`);
+        });
+      } catch (err) {
+        console.error('Failed to load client IDs:', err);
+      }
+    }
+
+    /* ── 4. Submit handler ─────────────────────────────────────── */
+    document.getElementById('projectForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const data     = Object.fromEntries(formData.entries());
+
+      try {
+        const res  = await fetch('/api/projects', {
+          method : 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body   : JSON.stringify(data)
+        });
+        const json = await res.json();
+
+        if (!res.ok) throw new Error(json.error || 'Unknown error');
+        alert(`Project ${json.project.projectId} created!`);
+        e.target.reset();
+        await loadNextProjectId();
+      } catch (err) {
+        alert('Failed: ' + err.message);
+      }
+    });
+
+    /* ── 5. Kick-off on page-load ──────────────────────────────── */
+    window.addEventListener('DOMContentLoaded', async () => {
+      await loadClientIds();
+      await loadNextProjectId();
+    });
   </script>
- <script>
-  window.addEventListener('DOMContentLoaded', async () => {
-    try {
-      const res = await fetch('/api/clients/list');
-      const data = await res.json();
-      const clientSelect = document.getElementById('clientId');
-
-      clientSelect.innerHTML = '<option value="">Select Client ID</option>';
-      data.clients.forEach(client => {
-        const option = document.createElement('option');
-        option.value = client.clientId;
-        option.textContent = client.clientId;
-        clientSelect.appendChild(option);
-      });
-    } catch (error) {
-      console.error('Failed to load client IDs:', error);
-    }
-  });
-</script>
-<script>
-  async function fetchNextProjectId() {
-    try {
-      const response = await fetch('/api/projects/next-id');
-      const data = await response.json();
-      if (data.nextProjectId) {
-        document.getElementById('projectId').value = data.nextProjectId;
-      }
-    } catch (error) {
-      console.error('Error fetching next project ID:', error);
-    }
-  }
-
-  // ✅ Call it when page loads
-  window.addEventListener('DOMContentLoaded', fetchNextProjectId);
-</script>
-
-
-
-  
-  
 </body>
 </html>
- 

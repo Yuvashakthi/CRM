@@ -56,41 +56,71 @@
     <main class="content" id="content">
       <h1>Create Billing</h1>
       <div class="form-wrapper">
-        <form id="billingForm" action="/create" method="POST" enctype="multipart/form-data" class="invoice-form">
-
+        <form id="billingForm" enctype="multipart/form-data" class="invoice-form">
           <label>Billing ID:</label>
           <input type="text" name="billingId" id="billingId" readonly required><br>
 
-  
           <label for="clientId">Client ID: </label>
           <select id="clientId" name="clientId" required>
             <option value="">Loading client IDs...</option>
           </select><br>
+
           <label>Paid Date:</label>
           <input type="date" name="paidDate" required><br>
-  
+
           <label>Paid Amount:</label>
           <input type="number" name="paidAmount" required><br>
-  
+
           <label>Status:</label>
           <select name="status" required>
             <option value="Billed">Billed</option>
             <option value="Unbilled">Unbilled</option>
-            
           </select><br>
-  
+
           <label>Upload File:</label>
           <input type="file" name="billingFile"><br><br>
 
           <button type="submit">Create Billing</button>
         </form>
       </div>
-     
     </main>
   </div>
 
   <script src="/script.js"></script>
+
   <script>
+    // ✅ Load client IDs
+    window.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const res = await fetch('/api/clients/list');
+        const data = await res.json();
+        const clientSelect = document.getElementById('clientId');
+        clientSelect.innerHTML = '<option value="">Select Client ID</option>';
+        data.clients.forEach(client => {
+          const option = document.createElement('option');
+          option.value = client.clientId;
+          option.textContent = client.clientId;
+          clientSelect.appendChild(option);
+        });
+      } catch (error) {
+        console.error('Failed to load client IDs:', error);
+      }
+
+      await loadNextBillingId();  // ✅ Load billing ID after page loads
+    });
+
+    // ✅ Get next auto-generated Billing ID
+    async function loadNextBillingId() {
+      try {
+        const res = await fetch('/next-id'); // <-- CORRECTED PATH
+        const data = await res.json();
+        document.getElementById('billingId').value = data.nextBillingId || '';
+      } catch (err) {
+        console.error('Could not fetch next billing ID:', err);
+      }
+    }
+
+    // ✅ Submit billing form
     document.getElementById('billingForm').addEventListener('submit', async function (e) {
       e.preventDefault();
 
@@ -105,8 +135,9 @@
         const data = await res.json();
 
         if (res.ok) {
-          alert('Billing record created successfully!');
-          location.reload();
+          alert(`Billing ${data.billing.billingId} created successfully!`);
+          this.reset();
+          await loadNextBillingId(); // refresh billing ID
         } else {
           alert(data.error || 'Failed to create billing record');
         }
@@ -115,64 +146,5 @@
       }
     });
   </script>
-<script>
-  window.addEventListener('DOMContentLoaded', async () => {
-    try {
-      const res = await fetch('/api/clients/list');
-      const data = await res.json();
-      const clientSelect = document.getElementById('clientId');
-
-      clientSelect.innerHTML = '<option value="">Select Client ID</option>';
-      data.clients.forEach(client => {
-        const option = document.createElement('option');
-        option.value = client.clientId;
-        option.textContent = client.clientId;
-        clientSelect.appendChild(option);
-      });
-    } catch (error) {
-      console.error('Failed to load client IDs:', error);
-    }
-  });
-</script>
-
-<script>
-  /* 1. Grab next ID ----------------------------------------------- */
-  async function loadNextBillingId() {
-    try {
-      const res = await fetch('/billing/next-id');   // adjust path if needed
-      const { nextBillingId } = await res.json();
-      document.getElementById('billingId').value = nextBillingId || '';
-    } catch (err) {
-      console.error('Could not fetch next billing ID:', err);
-    }
-  }
-
-  /* 2. Submit handler --------------------------------------------- */
-  document.getElementById('billingForm').addEventListener('submit', async e => {
-    e.preventDefault();
-    const form = e.target;
-    const data = new FormData(form);
-
-    try {
-      const res  = await fetch('/billing/create', { method: 'POST', body: data });
-      const json = await res.json();
-
-      if (!res.ok) throw new Error(json.error || 'Unknown error');
-      alert(`Billing ${json.billing.billingId} created!`);
-      form.reset();
-      await loadNextBillingId();                       // 🔁 show new ID
-    } catch (err) {
-      alert('Failed: ' + err.message);
-    }
-  });
-
-  /* 3. Kick off when page is ready -------------------------------- */
-  window.addEventListener('DOMContentLoaded', async () => {
-    await loadNextBillingId();                         // <<<
-    // ↳ leave your existing “load client IDs” code here
-  });
-</script>
-
-  
 </body>
 </html>

@@ -664,6 +664,7 @@ form button[type="submit"]:hover {
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.3s ease;
+
 }
 
 .project-form button[type="submit"]:hover {
@@ -1276,3 +1277,10 @@ button[type="submit"] {
   font-weight: bold;
   color:#fff;
 }
+
+.form-wrapper {
+  max-width: 900px;
+  margin: auto;
+  padding: 1rem;
+}
+
